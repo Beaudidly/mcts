@@ -18,8 +18,9 @@ typedef struct mcts_node_s {
  * Creates a new root node. parent and move set to NULL.
  * @param new_lplayer the last player to have moved
  * @return a pointer to a new mcts_node_s
+ * @pre new_lplayer is 0 or 1
  */
-mcts_node_s* create_mcts_node(uint8_t new_lplayer);
+mcts_node_s* create_mcts_root(uint8_t new_lplayer);
 
 /**
  * Creates a new mcts node.  
