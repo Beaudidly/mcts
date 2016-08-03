@@ -2,7 +2,7 @@
 #include "node_queue.h"
 
 node_queue_s*
-contstruct() {
+construct() {
     node_queue_s* queue = malloc(sizeof(node_queue_s));
 
     queue->head = NULL;
@@ -11,14 +11,14 @@ contstruct() {
     return queue;
 }
 
-// TODO
 void
 destruct(node_queue_s* queue) {
-    node_s* cursor;
+    node_s* cursor = queue->head;
 
-    while(! isempty(queue)) {
-        cursor = dequeue(queue);
-        free(cursor);
+    while( cursor != NULL ) {
+        node_s* tmp = cursor;
+        cursor = cursor->next;
+        free(tmp);
     }
 
     free(queue);
@@ -37,13 +37,16 @@ enqueue(node_queue_s* queue, node_s* node) {
 
 node_s*
 dequeue(node_queue_s* queue) {
-    node_s* ret_node;
-    
     if( queue->head == NULL ){
         return NULL;
     }
 
-    ret_node = queue->head;
+    node_s* ret_node = queue->head;
+
+    if( queue->head == queue->tail ){
+    
+        queue->tail = NULL;
+    }
 
     queue->head = ret_node->next;
 
