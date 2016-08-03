@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <"node_queue.h">
+#include "node_queue.h"
 
 node_queue_s*
 contstruct() {
@@ -14,7 +14,14 @@ contstruct() {
 // TODO
 void
 destruct(node_queue_s* queue) {
+    node_s* cursor;
 
+    while(! isempty(queue)) {
+        cursor = dequeue(queue);
+        free(cursor);
+    }
+
+    free(queue);
 }
 
 void
@@ -49,7 +56,7 @@ peek(node_queue_s *queue) {
 }
 
 uint8_t
-isempty(node_queue_s queue) {
+isempty(node_queue_s* queue) {
     if ( (queue->head == NULL) &&  (queue->tail == NULL)) {
         return 1;
     } else {

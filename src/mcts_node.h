@@ -29,6 +29,7 @@ mcts_node_s* create_mcts_root(uint8_t new_lplayer);
  * @param new_move the move to have caused the current state/position of the node
  * @param new_parent pointer to the parent node of the new node
  * @return a new mcts_node_s 
+ * @pre 
  */
 mcts_node_s* create_mcts_node(void* state, void* new_move, mcts_node_s* new_parent);
 

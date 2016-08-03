@@ -1,18 +1,19 @@
 #ifndef __NODE_QUEUE_H__
 #define __NODE_QUEUE_H__
 
-#include <"mcts_node.h">
+#include "mcts_node.h"
 #include <stdint.h>
+#include <stdlib.h>
 
-#typedef struct node_queue_s {
+typedef struct node_s {
+   mcts_node_s* data;
+   struct node_s* next;
+} node_s;
+
+typedef struct node_queue_s {
     node_s* head;
     node_s* tail;
 } node_queue_s;
-
-#typedef struct node_s {
-   mcts_node_s* data;
-   node_s* next;
-} node_s;
 
 node_queue_s* construct();
 void destruct(node_queue_s* queue);
