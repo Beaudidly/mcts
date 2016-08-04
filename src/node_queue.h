@@ -4,15 +4,17 @@
 #include "mcts_node.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct node_s {
-   mcts_node_s* data;
+   void* data;
    struct node_s* next;
 } node_s;
 
 typedef struct node_queue_s {
     node_s* head;
     node_s* tail;
+    uint32_t elements;
 } node_queue_s;
 
 /**
@@ -41,14 +43,21 @@ void enqueue(node_queue_s* queue, node_s* node);
  * Retrieves and removes the head of the queue
  * @param queue the queue to dequeue the first element
  */
-node_s* dequeue(node_queue_s* queue);
+void* dequeue(node_queue_s* queue);
 
 /**
  * Returns pointer to the head of the queue without removing
  * the head node
  * @param queue the queue to peek at the head node of
  */
-node_s* peek(node_queue_s* queue);
+void* peek(node_queue_s* queue);
+
+/**
+ * Removes a random node from the list
+ * @param the queue to remove a random node from
+ * @return a node_s* that was removed
+ */
+void* rand_remove(node_queue_s* queue);
 
 /**
  * Boolean check of whether the queue is empty or not.

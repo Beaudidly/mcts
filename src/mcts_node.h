@@ -2,36 +2,65 @@
 #define __MCTS_NODE_H__
 
 #include <stdint.h>
+#include "node_queue.h"
+
+typedef struct node_queue_s node_queue_s;
 
 typedef struct mcts_node_s {
-    uint32_t wins;                          // total wins from this nodes subtree
-    uint32_t plays;                         // total plays from this nodes subtree
-    uint8_t lplayer;                        // last player to have moved
-    struct mcts_node_s* parent;             
-    struct mcts_node_s* first_child;        // pointer to first child of the current node
-    void* move;                             // move that caused the game to reach this state
+    // total wins from this nodes subtree
+    uint32_t wins;
+    // total plays from this nodes subtree
+    uint32_t plays;
+    // last player to have moved
+    uint8_t lplayer;
+    struct mcts_node_s* parent;
+    // remaining moves left that can create children
+    node_queue_s* rmoves;
+    // move that caused the game to reach this state
+    void* move;
 } mcts_node_s;
-
-// Creates a new root node.  parent and move set to NULL
 
 /**
  * Creates a new root node. parent and move set to NULL.
  * @param new_lplayer the last player to have moved
- * @return a pointer to a new mcts_node_s
+ * @param moves_list the remaining moves the node can perform
+ * @return a pointer to a new mcts_node_s root
  * @pre new_lplayer is 0 or 1
  */
-mcts_node_s* create_mcts_root(uint8_t new_lplayer);
+mcts_node_s*
+create_mcts_root(uint8_t new_lplayer, node_queue_s* moves_list);
 
 /**
  * Creates a new mcts node.  
  *
  * @param new_lplayer the last player to have moved
- * @param new_move the move to have caused the current state/position of the node
- * @param new_parent pointer to the parent node of the new node
- * @return a new mcts_node_s 
- * @pre 
+ * @param moves_list the list of moves the node has left to perform
+ * @param new_move the move that caused the state of the node
+ * @param new_parent the node that created this node
+ * @return a pointer to a new mcts_node_s
+ * @pre new_lplayer is 0 or 1
  */
-mcts_node_s* create_mcts_node(void* state, void* new_move, mcts_node_s* new_parent);
+mcts_node_s*
+create_mcts_node(uint8_t new_lplayer, node_queue_s* moves_list,
+                void* new_move, mcts_node_s* new_parent);
+/**
+ * Creates a new MCTS node from a remaining move and adds it to the parent.
+ *
+ * @param parent the parent node in which to add a new child
+ * @param moves_list the list of moves that the child can perform
+ * @param new_lplayer the last player to have moved
+ * @pre there are remaining moves in the parent node
+ */
+mcts_node_s*
+add_child(mcts_node_s* parent, node_queue_s* moves_list, uint8_t new_lplayer);
+
+/**
+ * Free the allocated node
+ *
+ * @param target the MCTS node to free
+ */
+void
+destruct_mcts_node(mcts_node_s* target);
 
 /**
  * Recursively backpropagates up the tree adding the win value and always increasing a node's
@@ -39,10 +68,12 @@ mcts_node_s* create_mcts_node(void* state, void* new_move, mcts_node_s* new_pare
  *
  * @param game_result is the value to be added to the win value of the node.
  */
-void backpropagate(uint32_t game_result);
+void
+backpropagate(uint32_t game_result);
 
 /**
  * Prints a display of the tree
  */
-void print_tree();
+void
+print_tree();
 #endif

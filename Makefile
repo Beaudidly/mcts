@@ -7,3 +7,9 @@ OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
 # Test sources
 TEST_SOURCES=$(wildcard ./tests/*.c)
 TEST_OBJECTS=$(patsubst %.c, %.o, $(TEST_SOURCES))
+
+.PHONY:clean
+
+clean:
+	cd ./src/; make clean
+	cd ./tests/; make clean

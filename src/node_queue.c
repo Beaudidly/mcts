@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "node_queue.h"
+#include <time.h>
 
 node_queue_s*
 construct() {
@@ -7,6 +8,7 @@ construct() {
 
     queue->head = NULL;
     queue->tail = NULL;
+    queue->elements = 0;
 
     return queue;
 }
@@ -29,13 +31,15 @@ enqueue(node_queue_s* queue, node_s* node) {
     if (queue->head == NULL) {
         queue->head = node;
         queue->tail = node;
+        queue->elements += 1;
     } else {
         queue->tail->next = node;
         queue->tail = node;
+        queue->elements += 1;
     }
 }
 
-node_s*
+void*
 dequeue(node_queue_s* queue) {
     if( queue->head == NULL ){
         return NULL;
@@ -50,12 +54,46 @@ dequeue(node_queue_s* queue) {
 
     queue->head = ret_node->next;
 
-    return ret_node;
+    queue->elements -= 1;
+
+    return ret_node->data;
 }
 
-node_s*
+void*
 peek(node_queue_s *queue) {
-    return queue->head;
+    return queue->head->data;
+}
+
+void*
+rand_remove(node_queue_s* queue) {
+
+    if(queue->elements == 0) {
+        return NULL;
+    } else if(queue->elements == 1){
+        return dequeue(queue);
+    }
+
+    // at this point there is at least two elements in the list
+    srand((unsigned int)time(NULL));    // set a seed for rand
+    uint32_t index = rand() % queue->elements;
+
+    if(index == 0) {
+        return dequeue(queue);
+    }
+
+    node_s* precursor = queue->head;
+    node_s* cursor = precursor->next;
+
+    for(int i = 1; i < index; i++){
+        //Advance the cursors
+        precursor = cursor;
+        cursor = cursor->next;
+    }
+
+    // remove the node and splice the list together
+    precursor->next = cursor->next;
+    queue->elements -= 1;
+    return cursor->data;
 }
 
 uint8_t
