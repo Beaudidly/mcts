@@ -2,6 +2,8 @@
 #include "node_queue.h"
 #include "mcts_node.h"
 
+// TODO convert to camelCase
+
 mcts_node_s*
 create_mcts_root(uint8_t new_lplayer, node_queue_s* moves_list) {
     // Only real information we need from new_lplayer is 
@@ -27,7 +29,6 @@ create_mcts_node(uint8_t new_lplayer, node_queue_s* moves_list,
     return node;
 }
 
-// TODO
 mcts_node_s*
 add_child(mcts_node_s* parent, node_queue_s* moves_list,
         childMovesGen_f func) {
@@ -49,6 +50,37 @@ add_child(mcts_node_s* parent, node_queue_s* moves_list,
                                             (void*) childMove,
                                             parent);
 
-    enqueue(parent,(void*) child);
+    // adds the child to the parent's child list
+    enqueue(parent->children,(void*) child);
 
+    return child;
+}
+
+void
+destruct_mcts_tree(mcts_node_s* root, destructMove_f func) {
+    if(root == NULL ) return;
+    
+    mcts_node_s* child;
+
+    while( (child = dequeue(root->children)) != NULL ) {
+        destruct_mcts_tree(child, func);
+    }
+
+    destruct_node_queue(child->rmoves);
+    destruct_node_queue(child->children);
+    func(root->move);
+}
+
+void
+backpropagate(uint32_t game_result, mcts_node_s* node) {
+    mcts_node_s* cursor = node;
+
+    // Until the cursor reaches the Null stopper on the ultimate root,
+    // increment the total playcount and add the score to the win counter
+    // to each node on the path.
+    while (cursor != NULL) {
+        node->wins += game_result;
+        node->plays++;
+        cursor = cursor->parent;
+    }
 }

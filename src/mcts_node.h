@@ -6,6 +6,7 @@
 
 typedef struct node_queue_s node_queue_s;
 typedef node_queue_s* (*childMovesGen_f)(void*);
+typedef void (*destructMove_f)(void*);
 
 typedef struct mcts_node_s {
     // total wins from this nodes subtree
@@ -60,25 +61,28 @@ add_child(mcts_node_s* parent, node_queue_s* moves_list,
         childMovesGen_f func);
 
 /**
- * Free the allocated node
+ * Recursively destruct the mcts nodes from the root node
  *
- * @param target the MCTS node to free
+ * @param root the root node to destruct it's subtree
+ * @parm func a pointer to a callback function that takes in a void pointer
+ *       and destructs the move in a way specified by the specific game.
  */
 void
-destruct_mcts_node(mcts_node_s* target);
+destruct_mcts_tree(mcts_node_s* root, destructMove_f func);
 
 /**
  * Recursively backpropagates up the tree adding the win value and always increasing a node's
  * play count by 1.  Halts when a NULL value for parent is reached.
  *
  * @param game_result is the value to be added to the win value of the node.
+ * @param node the node that was simulated from and to backpropagate from
  */
 void
-backpropagate(uint32_t game_result);
+backpropagate(uint32_t game_result, mcts_node_s* node);
 
 /**
  * Prints a display of the tree
  */
-void
-print_tree();
+//void
+//print_tree();
 #endif

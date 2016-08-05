@@ -30,7 +30,7 @@ node_queue_s* construct();
  * @param queue the queue to be freed
  * @pre queue is not null
  */
-void destruct(node_queue_s* queue);
+void destruct_node_queue(node_queue_s* queue);
 
 /**
  * Create a new node from the data and add it to the queue

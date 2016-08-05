@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 /*
- * Collection of Unit tests for node_queue.c
+ * Collection of unit tests for node_queue.c
  * Using the Munit unit testing framework
  */
 
@@ -34,13 +34,9 @@ static void*
 enqueue_setup(const MunitParameter params[], void* user_data) {
     node_queue_s* queue = construct();
     
-    node_s* a = (node_s*) malloc(sizeof(node_s));
-    node_s* b = (node_s*) malloc(sizeof(node_s));
-    node_s* c = (node_s*) malloc(sizeof(node_s));
-
-    enqueue(queue, a);
-    enqueue(queue, b);
-    enqueue(queue, c);
+    enqueue(queue,(void*) "a" );
+    enqueue(queue,(void*) "b");
+    enqueue(queue,(void*) "c");
 
     return queue;
 }
@@ -59,7 +55,7 @@ enqueue_test(const MunitParameter params[], void* fixture) {
 
 void
 enqueue_tear_down(void* fixture) {
-    destruct(fixture);
+    destruct_node_queue(fixture);
 }
 
 // DEQUEUE
@@ -67,13 +63,9 @@ static MunitResult
 dequeue_test(const MunitParameter params[], void* data) {
     node_queue_s* queue = construct();
 
-    node_s* a = (node_s*) malloc(sizeof(node_s));
-    node_s* b = (node_s*) malloc(sizeof(node_s));
-    node_s* c = (node_s*) malloc(sizeof(node_s));
-
-    enqueue(queue, a);
-    enqueue(queue, b);
-    enqueue(queue, c);
+    enqueue(queue,(void*) "a" );
+    enqueue(queue,(void*) "b");
+    enqueue(queue,(void*) "c");
 
     munit_assert_uint32(queue->elements, ==, 3);
 
@@ -87,7 +79,7 @@ dequeue_test(const MunitParameter params[], void* data) {
     munit_assert_null(queue->tail);
     munit_assert_null(dequeue(queue));
 
-    destruct(queue);
+    destruct_node_queue(queue);
 
     return MUNIT_OK;
 }
@@ -97,19 +89,16 @@ static MunitResult
 peek_test(const MunitParameter params[], void* data) {
     node_queue_s* queue = construct();
 
-    node_s* a = (node_s*) malloc(sizeof(node_s));
-    node_s* b = (node_s*) malloc(sizeof(node_s));
-    node_s* c = (node_s*) malloc(sizeof(node_s));
 
-    enqueue(queue, a);
-    enqueue(queue, b);
-    enqueue(queue, c);
+    enqueue(queue,(void*) "a" );
+    enqueue(queue,(void*) "b");
+    enqueue(queue,(void*) "c");
 
     peek(queue);
 
     munit_assert_uint32(queue->elements, ==, 3);
 
-    destruct(queue);
+    destruct_node_queue(queue);
 
     return MUNIT_OK;
 }
@@ -123,17 +112,14 @@ isempty_test(const MunitParameter params[], void* data) {
 
     munit_assert_uint8(x, ==, 1);
 
-    node_s* a = (node_s*) malloc(sizeof(node_s));
-    node_s* b = (node_s*) malloc(sizeof(node_s));
-    node_s* c = (node_s*) malloc(sizeof(node_s));
 
-    enqueue(queue, a);
+    enqueue(queue, (void*) "a");
 
     x = isempty(queue);
     munit_assert_uint8(x, ==, 0);
 
-    enqueue(queue, b);
-    enqueue(queue, c);
+    enqueue(queue, (void*) "b");
+    enqueue(queue, (void*) "c");
 
     x = isempty(queue);
     munit_assert_uint8(x, ==, 0);
@@ -152,7 +138,7 @@ isempty_test(const MunitParameter params[], void* data) {
 
 
 
-    destruct(queue);
+    destruct_node_queue(queue);
 
     return MUNIT_OK;
 }
@@ -171,7 +157,7 @@ rand_setup(const MunitParameter params[], void* data) {
 
 static void
 rand_tear_down(void *fixture) {
-    destruct(fixture);
+    destruct_node_queue(fixture);
 }
 
 static MunitResult
@@ -185,6 +171,7 @@ rand_test(const MunitParameter params[], void* fixture) {
 
     rand_remove(queue);
     munit_assert_uint32(1, ==, queue->elements);
+
     munit_assert_ptr(queue->head, ==, queue->tail);
 
     rand_remove(queue);
@@ -199,29 +186,29 @@ rand_test(const MunitParameter params[], void* fixture) {
 
 // TEST SUITE
 static MunitTest test_suite_tests[] = {
-    { (char*) "/list/construct", construct_test, construct_setup,
+    { (char*) "/queue/construct", construct_test, construct_setup,
         construct_tear_down, MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/list/enqueue", enqueue_test, enqueue_setup,
+    { (char*) "/queue/enqueue", enqueue_test, enqueue_setup,
         enqueue_tear_down, MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/list/dequeue", dequeue_test, NULL, NULL,
+    { (char*) "/queue/dequeue", dequeue_test, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/list/peek", peek_test, NULL, NULL,
+    { (char*) "/queue/peek", peek_test, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/list/isempty", isempty_test, NULL, NULL,
+    { (char*) "/queue/isempty", isempty_test, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/list/rand_remove", rand_test, rand_setup,rand_tear_down,
+    { (char*) "/queue/rand_remove", rand_test, rand_setup,rand_tear_down,
         MUNIT_TEST_OPTION_NONE, NULL },
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
 static const MunitSuite test_suite = {
-    (char*) "testsuite",
+    (char*) "queuesuite",
     test_suite_tests,
     NULL,
     1,
     MUNIT_SUITE_OPTION_NONE
 };
 
-int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc|1)]) {
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
     return munit_suite_main(&test_suite, (void*) "muhunit", argc, argv);
 }

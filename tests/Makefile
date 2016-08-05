@@ -1,16 +1,26 @@
 CC= gcc
 VPATH= src:../src ../tests
 CFLAGS= -std=c11 -g -Werror -Wall
+TARGETS= mctsNodeTest queue_test
 
-list_test: list_test.o munit.o ../src/node_queue.o
+all: $(TARGETS)
+
+queue_test: queue_test.o munit.o node_queue.o
 	$(CC) $(CFLAGS) -o $@ $^ 
-	./list_test
+	./queue_test
+
+mctsNodeTest: mctsNodeTest.o munit.o node_queue.o mcts_node.o
+	$(CC) $(CFLAGS) -o $@ $^
+	./mctsNodeTest
+
+
 
 .PHONY: clean
 clean:
-	rm -f *.o ./list_test vgcore.*
+	rm -f *.o $(TARGETS) vgcore.*
 
 .PHONY: check
 
 check:
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./list_test
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
+		--track-origins=yes ./queue_test 

@@ -14,7 +14,7 @@ construct() {
 }
 
 void
-destruct(node_queue_s* queue) {
+destruct_node_queue(node_queue_s* queue) {
     node_s* cursor = queue->head;
 
     while( cursor != NULL ) {
@@ -98,6 +98,11 @@ rand_remove(node_queue_s* queue) {
     // remove the node and splice the list together
     precursor->next = cursor->next;
     queue->elements -= 1;
+
+    // If precursor is at the end, update the queue's tail
+    if(precursor->next == NULL) {
+        queue->tail = precursor;
+    }
 
     // Node needs to be freed, so we temporarily store it's data
     void* retData = cursor->data;
