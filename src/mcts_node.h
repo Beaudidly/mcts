@@ -5,6 +5,7 @@
 #include "node_queue.h"
 
 typedef struct node_queue_s node_queue_s;
+typedef node_queue_s* (*childMovesGen_f)(void*);
 
 typedef struct mcts_node_s {
     // total wins from this nodes subtree
@@ -17,6 +18,7 @@ typedef struct mcts_node_s {
     // remaining moves left that can create children
     node_queue_s* rmoves;
     // move that caused the game to reach this state
+    node_queue_s* children;
     void* move;
 } mcts_node_s;
 
@@ -48,11 +50,14 @@ create_mcts_node(uint8_t new_lplayer, node_queue_s* moves_list,
  *
  * @param parent the parent node in which to add a new child
  * @param moves_list the list of moves that the child can perform
- * @param new_lplayer the last player to have moved
+ * @param childMovesGen a callback function pointer to generate and populate
+ *        the moves list for the child.  
+ * @return the child that was created and added to the parent's child list
  * @pre there are remaining moves in the parent node
  */
 mcts_node_s*
-add_child(mcts_node_s* parent, node_queue_s* moves_list, uint8_t new_lplayer);
+add_child(mcts_node_s* parent, node_queue_s* moves_list,
+        childMovesGen_f func);
 
 /**
  * Free the allocated node

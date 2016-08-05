@@ -33,11 +33,13 @@ node_queue_s* construct();
 void destruct(node_queue_s* queue);
 
 /**
- * Add the node to the end or tail of the queue
- * @param node the node to be added to the queue
+ * Create a new node from the data and add it to the queue
+ *
+ * @param queue the queue to add the new node to
+ * @param newData the data to create the new node from
  * @pre the queue or node aren't NULL
  */
-void enqueue(node_queue_s* queue, node_s* node);
+void enqueue(node_queue_s* queue, void* newData);
 
 /**
  * Retrieves and removes the head of the queue

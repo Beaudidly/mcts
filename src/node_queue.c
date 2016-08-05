@@ -27,7 +27,10 @@ destruct(node_queue_s* queue) {
 }
 
 void
-enqueue(node_queue_s* queue, node_s* node) {
+enqueue(node_queue_s* queue, void* new_data) {
+    node_s* node = (node_s*) malloc(sizeof(node_s));
+    node->data = new_data;
+
     if (queue->head == NULL) {
         queue->head = node;
         queue->tail = node;
@@ -46,17 +49,19 @@ dequeue(node_queue_s* queue) {
     }
 
     node_s* ret_node = queue->head;
+    void* retData = ret_node->data;
 
     if( queue->head == queue->tail ){
     
         queue->tail = NULL;
     }
 
+    // Advance the head of the queue
     queue->head = ret_node->next;
-
     queue->elements -= 1;
 
-    return ret_node->data;
+    free(ret_node);
+    return retData;
 }
 
 void*
@@ -93,7 +98,12 @@ rand_remove(node_queue_s* queue) {
     // remove the node and splice the list together
     precursor->next = cursor->next;
     queue->elements -= 1;
-    return cursor->data;
+
+    // Node needs to be freed, so we temporarily store it's data
+    void* retData = cursor->data;
+    free(cursor);
+
+    return retData;
 }
 
 uint8_t
