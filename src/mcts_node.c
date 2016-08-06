@@ -74,15 +74,15 @@ destruct_mcts_tree(mcts_node_s* root) {
 }
 
 void
-backpropagate(uint32_t game_result, mcts_node_s* node) {
+backpropagation(int32_t game_result, mcts_node_s* node) {
     mcts_node_s* cursor = node;
 
     // Until the cursor reaches the Null stopper on the ultimate root,
     // increment the total playcount and add the score to the win counter
     // to each node on the path.
     while (cursor != NULL) {
-        node->wins += game_result;
-        node->plays++;
+        cursor->wins += game_result;
+        cursor->plays++;
         cursor = cursor->parent;
     }
 }

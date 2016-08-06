@@ -10,7 +10,7 @@ typedef void (*destructMove_f)(void*);
 
 typedef struct mcts_node_s {
     // total wins from this nodes subtree
-    uint32_t wins;
+    int32_t wins;
     // total plays from this nodes subtree
     uint32_t plays;
     // last player to have moved
@@ -74,7 +74,7 @@ destruct_mcts_tree(mcts_node_s* root);
  * @param node the node that was simulated from and to backpropagate from
  */
 void
-backpropagate(uint32_t game_result, mcts_node_s* node);
+backpropagation(int32_t game_result, mcts_node_s* node);
 
 /**
  * Prints a display of the tree

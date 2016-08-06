@@ -1,19 +1,38 @@
 #include "munit.h"
 #include "../src/mcts_node.h"
 #include <stdint.h>
+#include <stdio.h>
+
 
 // Macro to manually set up a moves list
-#define create_moves(PTR, X, Y, Z)       \
-    PTR = construct_queue();          \
+#define create_moves(PTR, X, Y, Z)      \
+    do {                                \
+    PTR = construct_queue();            \
     int* TMPPTR1 = malloc(sizeof(int)); \
     int* TMPPTR2 = malloc(sizeof(int)); \
     int* TMPPTR3 = malloc(sizeof(int)); \
-    *TMPPTR1 = X; \
-    *TMPPTR2 = Y;\
-    *TMPPTR3 = Z; \
+    *TMPPTR1 = X;                       \
+    *TMPPTR2 = Y;                       \
+    *TMPPTR3 = Z;                       \
     enqueue(PTR, (void*) TMPPTR1);      \
-    enqueue(PTR, (void*) TMPPTR2);  \
-    enqueue(PTR, (void*) TMPPTR3);
+    enqueue(PTR, (void*) TMPPTR2);      \
+    enqueue(PTR, (void*) TMPPTR3);      \
+    } while (0)
+
+// Creates a zero-set struct
+#define zero_MCTS(ptr)                                      \
+    do {                                                    \
+        ptr = (mcts_node_s*) malloc(sizeof(mcts_node_s));   \
+        memset(ptr, 0, sizeof(mcts_node_s));                \
+    } while (0)
+
+/*
+#define blank_node(PTR) \
+    PTR = (mcts_node_s*) malloc(sizeof(mcts_node_s)); \
+    PTR->wins = 0;  \
+    PTR->plays = 0; \
+    PTR->
+*/
 
 // satifies childMovesGen_f in that it creates a move list
 // off of a given state 
@@ -171,15 +190,78 @@ childTest(const MunitParameter params[], void* fixture) {
 
     return MUNIT_OK;
 }
-                                              
+
+// BACKPROPAGATION
+static void*
+backSetup(const MunitParameter params[], void* data) {
+    mcts_node_s* root;
+    mcts_node_s* first;
+    mcts_node_s* second;
+    
+    // initialize the nodes to zeroed out MCTS nodes
+    zero_MCTS(root);
+    zero_MCTS(first);
+    zero_MCTS(second);
+
+    // set up their chain manually
+    root->children = construct_queue();
+    enqueue(root->children, (void*) first);
+
+    first->children = construct_queue();
+    enqueue(first->children, (void*) second);
+
+    first->parent = root;
+    second->parent = first;
+
+    // we don't need to worry about the other memebers for this test so 
+    // the fixture is now ready to be used for testing
+    return second;        
+}
+
+static void
+backTearDown(void* fixture) {
+    // To try and keep this localized, manually destruct the chain 
+    mcts_node_s* second = (mcts_node_s*) fixture;
+    mcts_node_s* first = second->parent;
+    mcts_node_s* root = first->parent;
+
+    destruct_node_queue(first->children);
+    destruct_node_queue(root->children);
+
+    free(second);
+    free(first);
+    free(root);
+}
+
+static MunitResult
+backTest(const MunitParameter params[], void* fixture) {
+    mcts_node_s* leaf = (mcts_node_s*) fixture;
+    mcts_node_s* mid = leaf->parent;
+    mcts_node_s* root = mid->parent;
+    
+    backpropagation(3, leaf);
+
+    // Check for proper backpropagation
+    munit_assert_int32(3, ==, leaf->wins);
+    munit_assert_int32(3, ==, mid->wins);
+    munit_assert_int32(3, ==, root->wins);
+
+    munit_assert_int32(1, ==, leaf->plays);
+    munit_assert_int32(1, ==, mid->plays);
+    munit_assert_int32(1, ==, root->plays);
+
+    return MUNIT_OK;
+}
 
 // TEST SUITES
 static MunitTest test_suite_tests[] = {
     { (char*) "/mctsnode/createNode/", createNodeTest, NULL,
         NULL, MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/mcts_node_s", rootTest, rootSetup, rootTearDown, 0, NULL },
-    { (char*) "/mcttsnode/addchild", childTest, childSetup,
+    { (char*) "/mctsnodes/createroot/", rootTest, rootSetup, rootTearDown, 0, NULL },
+    { (char*) "/mcttsnode/addchild/", childTest, childSetup,
         childTearDown, 0, NULL },
+    { (char*) "/mctsnode/backprop/", backTest, backSetup,
+        backTearDown, 0, NULL },
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
