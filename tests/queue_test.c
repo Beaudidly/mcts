@@ -9,19 +9,19 @@
 
 // CONSTRUCT
 static void*
-construct_setup(const MunitParameter params[], void* data) {
-    return construct_queue();
+constructSetup(const MunitParameter params[], void* data) {
+    return constructQueue();
 }
 
 void
-construct_tear_down(void* fixture) {
+constructTearDown(void* fixture) {
     free(fixture);
 }
 static MunitResult
-construct_test(const MunitParameter params[], void* fixture) {
+constructTest(const MunitParameter params[], void* fixture) {
     (void) params;
 
-    node_queue_s* testQueue = (node_queue_s*) fixture; 
+    NodeQueue_s* testQueue = (NodeQueue_s*) fixture; 
 
     munit_assert_null(testQueue->head);
     munit_assert_null(testQueue->tail);
@@ -31,8 +31,8 @@ construct_test(const MunitParameter params[], void* fixture) {
 
 // ENQUEUE
 static void*
-enqueue_setup(const MunitParameter params[], void* user_data) {
-    node_queue_s* queue = construct_queue();
+enqueueSetup(const MunitParameter params[], void* user_data) {
+    NodeQueue_s* queue = constructQueue();
     
     enqueue(queue,(void*) "a" );
     enqueue(queue,(void*) "b");
@@ -42,8 +42,8 @@ enqueue_setup(const MunitParameter params[], void* user_data) {
 }
 
 static MunitResult
-enqueue_test(const MunitParameter params[], void* fixture) {
-    node_queue_s* queue = (node_queue_s*) fixture;
+enqueueTest(const MunitParameter params[], void* fixture) {
+    NodeQueue_s* queue = (NodeQueue_s*) fixture;
 
     munit_assert_not_null(queue);
     munit_assert_not_null(queue->head);
@@ -54,14 +54,14 @@ enqueue_test(const MunitParameter params[], void* fixture) {
 }
 
 void
-enqueue_tear_down(void* fixture) {
-    destruct_node_queue(fixture);
+enqueueTearDown(void* fixture) {
+    destructNodeQueue(fixture);
 }
 
 // DEQUEUE
 static MunitResult
-dequeue_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct_queue();
+dequeueTest(const MunitParameter params[], void* data) {
+    NodeQueue_s* queue = constructQueue();
 
     enqueue(queue,(void*) "a" );
     enqueue(queue,(void*) "b");
@@ -79,7 +79,7 @@ dequeue_test(const MunitParameter params[], void* data) {
     munit_assert_null(queue->tail);
     munit_assert_null(dequeue(queue));
 
-    destruct_node_queue(queue);
+    destructNodeQueue(queue);
 
     return MUNIT_OK;
 }
@@ -87,7 +87,7 @@ dequeue_test(const MunitParameter params[], void* data) {
 // PEEK
 static MunitResult
 peek_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct_queue();
+    NodeQueue_s* queue = constructQueue();
 
 
     enqueue(queue,(void*) "a" );
@@ -98,15 +98,15 @@ peek_test(const MunitParameter params[], void* data) {
 
     munit_assert_uint32(queue->elements, ==, 3);
 
-    destruct_node_queue(queue);
+    destructNodeQueue(queue);
 
     return MUNIT_OK;
 }
 
 // ISEMPTY
 static MunitResult
-isempty_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct_queue();
+isemptyTest(const MunitParameter params[], void* data) {
+    NodeQueue_s* queue = constructQueue();
 
     uint8_t x = isempty(queue);
 
@@ -138,15 +138,15 @@ isempty_test(const MunitParameter params[], void* data) {
 
 
 
-    destruct_node_queue(queue);
+    destructNodeQueue(queue);
 
     return MUNIT_OK;
 }
 
 // RANDOM REMOVE
 static void*
-rand_setup(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct_queue();
+randSetup(const MunitParameter params[], void* data) {
+    NodeQueue_s* queue = constructQueue();
 
     enqueue(queue,(void*) "a");
     enqueue(queue,(void*) "b");
@@ -156,47 +156,47 @@ rand_setup(const MunitParameter params[], void* data) {
 }
 
 static void
-rand_tear_down(void *fixture) {
-    destruct_node_queue(fixture);
+randTearDown(void *fixture) {
+    destructNodeQueue(fixture);
 }
 
 static MunitResult
-rand_test(const MunitParameter params[], void* fixture) {
-    node_queue_s* queue = (node_queue_s*) fixture;
+randTest(const MunitParameter params[], void* fixture) {
+    NodeQueue_s* queue = (NodeQueue_s*) fixture;
 
     munit_assert_uint32(3, ==, queue->elements);
 
-    rand_remove(queue);
+    randRemove(queue);
     munit_assert_uint32(2, ==, queue->elements);
 
-    rand_remove(queue);
+    randRemove(queue);
     munit_assert_uint32(1, ==, queue->elements);
 
     munit_assert_ptr(queue->head, ==, queue->tail);
 
-    rand_remove(queue);
+    randRemove(queue);
     munit_assert_uint32(0, ==, queue->elements);
     munit_assert_null(queue->head);
     munit_assert_null(queue->tail);
 
-    munit_assert_null(rand_remove(queue));
+    munit_assert_null(randRemove(queue));
 
     return MUNIT_OK;
 }
 
 // TEST SUITE
 static MunitTest test_suite_tests[] = {
-    { (char*) "/queue/construct", construct_test, construct_setup,
-        construct_tear_down, MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/queue/enqueue", enqueue_test, enqueue_setup,
-        enqueue_tear_down, MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/queue/dequeue", dequeue_test, NULL, NULL,
+    { (char*) "/queue/construct", constructTest, constructSetup,
+        constructTearDown, MUNIT_TEST_OPTION_NONE, NULL },
+    { (char*) "/queue/enqueue", enqueueTest, enqueueSetup,
+        enqueueTearDown, MUNIT_TEST_OPTION_NONE, NULL },
+    { (char*) "/queue/dequeue", dequeueTest, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
     { (char*) "/queue/peek", peek_test, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/queue/isempty", isempty_test, NULL, NULL,
+    { (char*) "/queue/isempty", isemptyTest, NULL, NULL,
         MUNIT_TEST_OPTION_NONE, NULL },
-    { (char*) "/queue/rand_remove", rand_test, rand_setup,rand_tear_down,
+    { (char*) "/queue/randRemove", randTest, randSetup,randTearDown,
         MUNIT_TEST_OPTION_NONE, NULL },
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };

@@ -2,9 +2,9 @@
 #include "node_queue.h"
 #include <time.h>
 
-node_queue_s*
-construct_queue() {
-    node_queue_s* queue = malloc(sizeof(node_queue_s));
+NodeQueue_s*
+constructQueue() {
+    NodeQueue_s* queue = malloc(sizeof(NodeQueue_s));
 
     queue->head = NULL;
     queue->tail = NULL;
@@ -14,11 +14,11 @@ construct_queue() {
 }
 
 void
-destruct_node_queue(node_queue_s* queue) {
-    node_s* cursor = queue->head;
+destructNodeQueue(NodeQueue_s* queue) {
+    Node_s* cursor = queue->head;
 
     while( cursor != NULL ) {
-        node_s* tmp = cursor;
+        Node_s* tmp = cursor;
         cursor = cursor->next;
         free(tmp);
     }
@@ -27,8 +27,8 @@ destruct_node_queue(node_queue_s* queue) {
 }
 
 void
-free_queue_data(node_queue_s* queue) {
-    node_s* cursor = queue->head;
+freeQueueData(NodeQueue_s* queue) {
+    Node_s* cursor = queue->head;
 
     while(cursor != NULL) {
         free(cursor->data);
@@ -37,8 +37,8 @@ free_queue_data(node_queue_s* queue) {
 }
 
 void
-enqueue(node_queue_s* queue, void* new_data) {
-    node_s* node = (node_s*) malloc(sizeof(node_s));
+enqueue(NodeQueue_s* queue, void* new_data) {
+    Node_s* node = (Node_s*) malloc(sizeof(Node_s));
     node->data = new_data;
     node->next = NULL;
 
@@ -54,13 +54,13 @@ enqueue(node_queue_s* queue, void* new_data) {
 }
 
 void*
-dequeue(node_queue_s* queue) {
+dequeue(NodeQueue_s* queue) {
     if( queue->head == NULL ){
         return NULL;
     }
 
-    node_s* ret_node = queue->head;
-    void* retData = ret_node->data;
+    Node_s* retNode = queue->head;
+    void* retData = retNode->data;
 
     if( queue->head == queue->tail ){
     
@@ -68,20 +68,20 @@ dequeue(node_queue_s* queue) {
     }
 
     // Advance the head of the queue
-    queue->head = ret_node->next;
+    queue->head = retNode->next;
     queue->elements -= 1;
 
-    free(ret_node);
+    free(retNode);
     return retData;
 }
 
 void*
-peek(node_queue_s *queue) {
+peek(NodeQueue_s *queue) {
     return queue->head->data;
 }
 
 void*
-rand_remove(node_queue_s* queue) {
+randRemove(NodeQueue_s* queue) {
 
     if(queue->elements == 0) {
         return NULL;
@@ -97,8 +97,8 @@ rand_remove(node_queue_s* queue) {
         return dequeue(queue);
     }
 
-    node_s* precursor = queue->head;
-    node_s* cursor = precursor->next;
+    Node_s* precursor = queue->head;
+    Node_s* cursor = precursor->next;
 
     for(int i = 1; i < index; i++){
         //Advance the cursors
@@ -123,7 +123,7 @@ rand_remove(node_queue_s* queue) {
 }
 
 uint8_t
-isempty(node_queue_s* queue) {
+isempty(NodeQueue_s* queue) {
     if ( (queue->head == NULL) &&  (queue->tail == NULL)) {
         return 1;
     } else {

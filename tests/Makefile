@@ -7,12 +7,13 @@ all: $(TARGETS)
 
 queue_test: queue_test.o munit.o node_queue.o
 	$(CC) $(CFLAGS) -o $@ $^ 
-	./queue_test
 
 mctsNodeTest: mctsNodeTest.o munit.o node_queue.o mcts_node.o
 	$(CC) $(CFLAGS) -o $@ $^
-	./mctsNodeTest
 
+tests:
+	./queue_test
+	./mctsNodeTest
 
 
 .PHONY: clean

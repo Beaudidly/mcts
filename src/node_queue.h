@@ -6,23 +6,23 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct node_s {
+typedef struct Node_s {
    void* data;
-   struct node_s* next;
-} node_s;
+   struct Node_s* next;
+} Node_s;
 
-typedef struct node_queue_s {
-    node_s* head;
-    node_s* tail;
+typedef struct NodeQueue_s {
+    Node_s* head;
+    Node_s* tail;
     uint32_t elements;
-} node_queue_s;
+} NodeQueue_s;
 
 /**
- * Allocate an empty node_queue_s
+ * Allocate an empty NodeQueue_s
  * head and tail defaulted to NULL
- * @return empty node_queue_s
+ * @return empty NodeQueue_s
  */
-node_queue_s* construct_queue();
+NodeQueue_s* constructQueue();
 
 /**
  * Iterates through the queue freeing all of it's existign nodes
@@ -30,7 +30,7 @@ node_queue_s* construct_queue();
  * @param queue the queue to be freed
  * @pre queue is not null
  */
-void destruct_node_queue(node_queue_s* queue);
+void destructNodeQueue(NodeQueue_s* queue);
 
 /**
  * Iterates through the queue's nodes freeing the data members
@@ -38,7 +38,7 @@ void destruct_node_queue(node_queue_s* queue);
  * @param queue to free the node data from
  * @pre all the node's have manually allocated data
  */
-void free_queue_data(node_queue_s* queue);
+void freeQueueData(NodeQueue_s* queue);
 
 /**
  * Create a new node from the data and add it to the queue
@@ -47,27 +47,27 @@ void free_queue_data(node_queue_s* queue);
  * @param newData the data to create the new node from
  * @pre the queue or node aren't NULL
  */
-void enqueue(node_queue_s* queue, void* newData);
+void enqueue(NodeQueue_s* queue, void* newData);
 
 /**
  * Retrieves and removes the head of the queue
  * @param queue the queue to dequeue the first element
  */
-void* dequeue(node_queue_s* queue);
+void* dequeue(NodeQueue_s* queue);
 
 /**
  * Returns pointer to the head of the queue without removing
  * the head node
  * @param queue the queue to peek at the head node of
  */
-void* peek(node_queue_s* queue);
+void* peek(NodeQueue_s* queue);
 
 /**
  * Removes a random node from the list
  * @param the queue to remove a random node from
- * @return a node_s* that was removed
+ * @return a Node_s* that was removed
  */
-void* rand_remove(node_queue_s* queue);
+void* randRemove(NodeQueue_s* queue);
 
 /**
  * Boolean check of whether the queue is empty or not.
@@ -76,6 +76,6 @@ void* rand_remove(node_queue_s* queue);
  * @param queue to check the empty status of
  * @return uint8_t 0 or 1 verifyign the empty status
  */
-uint8_t isempty(node_queue_s* queue);
+uint8_t isempty(NodeQueue_s* queue);
 
 #endif

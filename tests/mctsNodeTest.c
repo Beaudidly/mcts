@@ -1,13 +1,16 @@
 #include "munit.h"
 #include "../src/mcts_node.h"
 #include <stdint.h>
-#include <stdio.h>
 
+/*
+ * Collection of unit tests for mcts_node.c
+ * Using the Munit unit testing framkework
+ */
 
 // Macro to manually set up a moves list
-#define create_moves(PTR, X, Y, Z)      \
+#define CREATEMOVES(PTR, X, Y, Z)      \
     do {                                \
-    PTR = construct_queue();            \
+    PTR = constructQueue();            \
     int* TMPPTR1 = malloc(sizeof(int)); \
     int* TMPPTR2 = malloc(sizeof(int)); \
     int* TMPPTR3 = malloc(sizeof(int)); \
@@ -22,34 +25,22 @@
 // Creates a zero-set struct
 #define zero_MCTS(ptr)                                      \
     do {                                                    \
-        ptr = (mcts_node_s*) malloc(sizeof(mcts_node_s));   \
-        memset(ptr, 0, sizeof(mcts_node_s));                \
+        ptr = (MctsNode_s*) malloc(sizeof(MctsNode_s));   \
+        memset(ptr, 0, sizeof(MctsNode_s));                \
     } while (0)
-
-/*
-#define blank_node(PTR) \
-    PTR = (mcts_node_s*) malloc(sizeof(mcts_node_s)); \
-    PTR->wins = 0;  \
-    PTR->plays = 0; \
-    PTR->
-*/
 
 // satifies childMovesGen_f in that it creates a move list
 // off of a given state 
-static node_queue_s*
+static NodeQueue_s*
 genMoves(void* genstate) {
    int* state = (int*) genstate;
    int seed = *state;
 
-   node_queue_s* moves_list;
-   create_moves(moves_list, seed + 1, seed + 2, seed + 3);
+   NodeQueue_s* movesList;
+   CREATEMOVES(movesList, seed + 1, seed + 2, seed + 3);
 
-   return moves_list;
+   return movesList;
 }
-/*
- * Collection of unit tests for mcts_node.c
- * Using the Munit unit testing framkework
- */
 
 /* FUNCTION UNIT TESTS */
 
@@ -62,8 +53,8 @@ createNodeTest(const MunitParameter params[], void* data) {
 
     int testMove = 5; 
     
-    mcts_node_s* root = create_mcts_node( 1,
-                                        construct_queue(),
+    MctsNode_s* root = createMctsNode( 1,
+                                        constructQueue(),
                                         (void*) &testMove,
                                         NULL);
 
@@ -86,34 +77,34 @@ createNodeTest(const MunitParameter params[], void* data) {
 // CREATE ROOT
 static void*
 rootSetup(const MunitParameter params[], void* data) {
-    mcts_node_s* fixture;
-    uint8_t new_lplayer = 2;
+    MctsNode_s* fixture;
+    uint8_t newLplayer = 2;
 
-    node_queue_s* moves_list;
-    create_moves(moves_list, 1, 2, 3);
+    NodeQueue_s* movesList;
+    CREATEMOVES(movesList, 1, 2, 3);
 
 
     // Create the root
-    fixture = create_mcts_root(new_lplayer, moves_list);
+    fixture = createMctsRoot(newLplayer, movesList);
 
     return fixture;
 }
 
 static void
 rootTearDown(void* fixture){
-    mcts_node_s* root = (mcts_node_s*) fixture;
+    MctsNode_s* root = (MctsNode_s*) fixture;
 
-    free_queue_data(root->rmoves);
+    freeQueueData(root->rmoves);
 
     // Clean up the lists
-    destruct_node_queue(root->rmoves);
-    destruct_node_queue(root->children);
+    destructNodeQueue(root->rmoves);
+    destructNodeQueue(root->children);
 
     free(root);
 }
 static MunitResult
 rootTest(const MunitParameter params[], void* fixture) {
-    mcts_node_s* root = (mcts_node_s*) fixture;
+    MctsNode_s* root = (MctsNode_s*) fixture;
 
     munit_assert_uint32(root->wins, ==, 0);
     munit_assert_uint32(root->plays, ==, 0);
@@ -141,29 +132,29 @@ static void*
 childSetup(const MunitParameter params[], void* data) {
 
     // Manually set up the root/parent
-    node_queue_s* moves_list;
-    create_moves(moves_list, 1, 2, 3);
-    mcts_node_s* fixture = create_mcts_root(2, moves_list);
+    NodeQueue_s* movesList;
+    CREATEMOVES(movesList, 1, 2, 3);
+    MctsNode_s* fixture = createMctsRoot(2, movesList);
 
     return fixture;
 }
 
 static void
 childTearDown(void* fixture) {
-    mcts_node_s* parent = (mcts_node_s*) fixture;
+    MctsNode_s* parent = (MctsNode_s*) fixture;
 
-    destruct_mcts_tree(parent);
+    destructMctsTree(parent);
 }
 
 static MunitResult
 childTest(const MunitParameter params[], void* fixture) {
-    mcts_node_s* parent = (mcts_node_s*) fixture;
+    MctsNode_s* parent = (MctsNode_s*) fixture;
 
     // Manually create moves list for child and populate
-    node_queue_s* moves_list;
-    create_moves(moves_list, 1, 2, 3);
+    NodeQueue_s* movesList;
+    CREATEMOVES(movesList, 1, 2, 3);
 
-    mcts_node_s* child = add_child(parent, genMoves);
+    MctsNode_s* child = addChild(parent, genMoves);
 
     munit_assert_ptr(parent, ==, child->parent);
 
@@ -171,7 +162,7 @@ childTest(const MunitParameter params[], void* fixture) {
     munit_assert_uint8(1, ==, child->lplayer);
 
     // Parent's children queue has been updated
-    mcts_node_s* cListCheck = peek(parent->children);
+    MctsNode_s* cListCheck = peek(parent->children);
     munit_assert_ptr(child, ==, cListCheck);
     
     // The child's move should be 1, 2, or 3
@@ -194,9 +185,9 @@ childTest(const MunitParameter params[], void* fixture) {
 // BACKPROPAGATION
 static void*
 backSetup(const MunitParameter params[], void* data) {
-    mcts_node_s* root;
-    mcts_node_s* first;
-    mcts_node_s* second;
+    MctsNode_s* root;
+    MctsNode_s* first;
+    MctsNode_s* second;
     
     // initialize the nodes to zeroed out MCTS nodes
     zero_MCTS(root);
@@ -204,10 +195,10 @@ backSetup(const MunitParameter params[], void* data) {
     zero_MCTS(second);
 
     // set up their chain manually
-    root->children = construct_queue();
+    root->children = constructQueue();
     enqueue(root->children, (void*) first);
 
-    first->children = construct_queue();
+    first->children = constructQueue();
     enqueue(first->children, (void*) second);
 
     first->parent = root;
@@ -221,12 +212,12 @@ backSetup(const MunitParameter params[], void* data) {
 static void
 backTearDown(void* fixture) {
     // To try and keep this localized, manually destruct the chain 
-    mcts_node_s* second = (mcts_node_s*) fixture;
-    mcts_node_s* first = second->parent;
-    mcts_node_s* root = first->parent;
+    MctsNode_s* second = (MctsNode_s*) fixture;
+    MctsNode_s* first = second->parent;
+    MctsNode_s* root = first->parent;
 
-    destruct_node_queue(first->children);
-    destruct_node_queue(root->children);
+    destructNodeQueue(first->children);
+    destructNodeQueue(root->children);
 
     free(second);
     free(first);
@@ -235,9 +226,9 @@ backTearDown(void* fixture) {
 
 static MunitResult
 backTest(const MunitParameter params[], void* fixture) {
-    mcts_node_s* leaf = (mcts_node_s*) fixture;
-    mcts_node_s* mid = leaf->parent;
-    mcts_node_s* root = mid->parent;
+    MctsNode_s* leaf = (MctsNode_s*) fixture;
+    MctsNode_s* mid = leaf->parent;
+    MctsNode_s* root = mid->parent;
     
     backpropagation(3, leaf);
 
