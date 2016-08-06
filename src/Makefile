@@ -1,8 +1,8 @@
 CC= gcc
 VPATH= src:./
-CFLAGS= -std=c11 -g -Werror -Wall
+CFLAGS= -std=c11 -g -Wall
 
-test: test.o node_queue.o
+tmptest: tmptest.o node_queue.o mcts_node.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 .PHONY: clean

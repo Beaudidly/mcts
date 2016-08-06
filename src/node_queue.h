@@ -22,7 +22,7 @@ typedef struct node_queue_s {
  * head and tail defaulted to NULL
  * @return empty node_queue_s
  */
-node_queue_s* construct();
+node_queue_s* construct_queue();
 
 /**
  * Iterates through the queue freeing all of it's existign nodes
@@ -31,6 +31,14 @@ node_queue_s* construct();
  * @pre queue is not null
  */
 void destruct_node_queue(node_queue_s* queue);
+
+/**
+ * Iterates through the queue's nodes freeing the data members
+ *
+ * @param queue to free the node data from
+ * @pre all the node's have manually allocated data
+ */
+void free_queue_data(node_queue_s* queue);
 
 /**
  * Create a new node from the data and add it to the queue

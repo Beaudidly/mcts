@@ -23,15 +23,14 @@ create_mcts_node(uint8_t new_lplayer, node_queue_s* moves_list,
     node->parent = new_parent;
     node->rmoves = moves_list;
     // Create an empty queue/list of children
-    node->children = construct();
+    node->children = construct_queue();
     node->move = new_move;
 
     return node;
 }
 
 mcts_node_s*
-add_child(mcts_node_s* parent, node_queue_s* moves_list,
-        childMovesGen_f func) {
+add_child(mcts_node_s* parent, childMovesGen_f func) {
     // Toggles the last player to the opposite of what 
     // the parent had
     uint8_t new_lplayer = 3 - parent->lplayer;
@@ -57,18 +56,21 @@ add_child(mcts_node_s* parent, node_queue_s* moves_list,
 }
 
 void
-destruct_mcts_tree(mcts_node_s* root, destructMove_f func) {
+destruct_mcts_tree(mcts_node_s* root) {
     if(root == NULL ) return;
     
     mcts_node_s* child;
 
     while( (child = dequeue(root->children)) != NULL ) {
-        destruct_mcts_tree(child, func);
+        destruct_mcts_tree(child);
     }
+    // Destrroy the moves list, really hope you didn't copy pointers
+    free_queue_data(root->rmoves); 
 
-    destruct_node_queue(child->rmoves);
-    destruct_node_queue(child->children);
-    func(root->move);
+    destruct_node_queue(root->rmoves);
+    destruct_node_queue(root->children);
+    free(root->move); 
+    free(root);
 }
 
 void

@@ -10,7 +10,7 @@
 // CONSTRUCT
 static void*
 construct_setup(const MunitParameter params[], void* data) {
-    return construct();
+    return construct_queue();
 }
 
 void
@@ -32,7 +32,7 @@ construct_test(const MunitParameter params[], void* fixture) {
 // ENQUEUE
 static void*
 enqueue_setup(const MunitParameter params[], void* user_data) {
-    node_queue_s* queue = construct();
+    node_queue_s* queue = construct_queue();
     
     enqueue(queue,(void*) "a" );
     enqueue(queue,(void*) "b");
@@ -61,7 +61,7 @@ enqueue_tear_down(void* fixture) {
 // DEQUEUE
 static MunitResult
 dequeue_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct();
+    node_queue_s* queue = construct_queue();
 
     enqueue(queue,(void*) "a" );
     enqueue(queue,(void*) "b");
@@ -87,7 +87,7 @@ dequeue_test(const MunitParameter params[], void* data) {
 // PEEK
 static MunitResult
 peek_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct();
+    node_queue_s* queue = construct_queue();
 
 
     enqueue(queue,(void*) "a" );
@@ -106,7 +106,7 @@ peek_test(const MunitParameter params[], void* data) {
 // ISEMPTY
 static MunitResult
 isempty_test(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct();
+    node_queue_s* queue = construct_queue();
 
     uint8_t x = isempty(queue);
 
@@ -146,7 +146,7 @@ isempty_test(const MunitParameter params[], void* data) {
 // RANDOM REMOVE
 static void*
 rand_setup(const MunitParameter params[], void* data) {
-    node_queue_s* queue = construct();
+    node_queue_s* queue = construct_queue();
 
     enqueue(queue,(void*) "a");
     enqueue(queue,(void*) "b");

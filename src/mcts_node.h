@@ -50,25 +50,21 @@ create_mcts_node(uint8_t new_lplayer, node_queue_s* moves_list,
  * Creates a new MCTS node from a remaining move and adds it to the parent.
  *
  * @param parent the parent node in which to add a new child
- * @param moves_list the list of moves that the child can perform
  * @param childMovesGen a callback function pointer to generate and populate
  *        the moves list for the child.  
  * @return the child that was created and added to the parent's child list
  * @pre there are remaining moves in the parent node
  */
 mcts_node_s*
-add_child(mcts_node_s* parent, node_queue_s* moves_list,
-        childMovesGen_f func);
+add_child(mcts_node_s* parent, childMovesGen_f func);
 
 /**
  * Recursively destruct the mcts nodes from the root node
  *
  * @param root the root node to destruct it's subtree
- * @parm func a pointer to a callback function that takes in a void pointer
- *       and destructs the move in a way specified by the specific game.
  */
 void
-destruct_mcts_tree(mcts_node_s* root, destructMove_f func);
+destruct_mcts_tree(mcts_node_s* root);
 
 /**
  * Recursively backpropagates up the tree adding the win value and always increasing a node's

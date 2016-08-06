@@ -3,7 +3,7 @@
 #include <time.h>
 
 node_queue_s*
-construct() {
+construct_queue() {
     node_queue_s* queue = malloc(sizeof(node_queue_s));
 
     queue->head = NULL;
@@ -27,9 +27,20 @@ destruct_node_queue(node_queue_s* queue) {
 }
 
 void
+free_queue_data(node_queue_s* queue) {
+    node_s* cursor = queue->head;
+
+    while(cursor != NULL) {
+        free(cursor->data);
+        cursor = cursor->next;
+    }
+}
+
+void
 enqueue(node_queue_s* queue, void* new_data) {
     node_s* node = (node_s*) malloc(sizeof(node_s));
     node->data = new_data;
+    node->next = NULL;
 
     if (queue->head == NULL) {
         queue->head = node;

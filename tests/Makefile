@@ -1,6 +1,6 @@
 CC= gcc
 VPATH= src:../src ../tests
-CFLAGS= -std=c11 -g -Werror -Wall
+CFLAGS= -std=c11 -g -Werror -Wall -pedantic
 TARGETS= mctsNodeTest queue_test
 
 all: $(TARGETS)
