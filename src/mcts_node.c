@@ -69,8 +69,12 @@ destructMctsTree(MctsNode_s* root) {
 
     destructNodeQueue(root->rmoves);
     destructNodeQueue(root->children);
-    free(root->move); 
-    free(root);
+    if( root != NULL) {
+        free(root); 
+        if(root->move != NULL) {
+            free(root->move);
+        }
+    }
 }
 
 void

@@ -20,7 +20,9 @@ destructNodeQueue(NodeQueue_s* queue) {
     while( cursor != NULL ) {
         Node_s* tmp = cursor;
         cursor = cursor->next;
-        free(tmp);
+        if( tmp != NULL ) {
+            free(tmp);
+        }
     }
 
     free(queue);

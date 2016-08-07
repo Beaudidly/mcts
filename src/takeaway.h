@@ -1,7 +1,7 @@
 #ifndef __TAKEAWAY_H__
 #define __TAKEAWAY_H__
 
-#include <stdin.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include "node_queue.h"
 
@@ -14,7 +14,7 @@
  */
 
 typedef struct TakeState_s {
-    int8_t pennies;     // number of pennies in the pile
+    uint8_t pennies;     // number of pennies in the pile
     uint8_t lplayer;    // last player to have played
 }
 
@@ -26,7 +26,15 @@ typedef struct TakeState_s {
  * @return dynamically allocated TakeState_s
  */
 TakeState_s*
-createTakeState(int8_t numPennies, uint8_t firstPlayer);
+createTakeState(uint8_t numPennies, uint8_t firstPlayer);
+
+/**
+ * Cleans up the given manually allocated TakeState_s
+ *
+ * @param target pointer to the TakeState_s to free up
+ */
+void
+destructTakeState(TakeState_s* target);
 
 /**
  * Create a deep copy of the TakeState_s
@@ -45,7 +53,7 @@ deepCopy(TakeState_s* state);
  * @pre the move is legal and follows the rules of the game
  */
 void
-performMove(TakeState_s* state, int8_t* move);
+performMove(TakeState_s* state, uint8_t* move);
 
 /**
  * Generate a list of moves possible to perform from the given state.
@@ -74,7 +82,7 @@ gameResult(TakeState_s* state, uint8_t player);
  * @param state the TakeState_s to get legal moves from
  * @return int8_t move selected by the human player
  */
-int8_t
+uint8_t
 humanMoveInput(TakeState_s* state);
 
 /**
