@@ -37,9 +37,9 @@ freeQueueData(NodeQueue_s* queue) {
 }
 
 void
-enqueue(NodeQueue_s* queue, void* new_data) {
+enqueue(NodeQueue_s* queue, void* newData) {
     Node_s* node = (Node_s*) malloc(sizeof(Node_s));
-    node->data = new_data;
+    node->data = newData;
     node->next = NULL;
 
     if (queue->head == NULL) {
