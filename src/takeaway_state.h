@@ -1,5 +1,5 @@
-#ifndef __TAKEAWAY_H__
-#define __TAKEAWAY_H__
+#ifndef __TAKEAWAY_STATE_H__
+#define __TAKEAWAY_STATE_H__
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -15,8 +15,8 @@
 
 typedef struct TakeState_s {
     uint8_t pennies;     // number of pennies in the pile
-    uint8_t lplayer;    // last player to have played
-}
+    uint8_t lplayer;     // last player to have played
+} TakeState_s;
 
 /**
  * dynamically allocate a TakeState_s struct 
@@ -75,22 +75,4 @@ getMovesList(TakeState_s* state);
  */
 int8_t
 gameResult(TakeState_s* state, uint8_t player);
-
-/**
- * Get a move selection from a human player
- *
- * @param state the TakeState_s to get legal moves from
- * @return int8_t move selected by the human player
- */
-uint8_t
-humanMoveInput(TakeState_s* state);
-
-/**
- * returns string form of TakeState_s
- * @param state TakeState_s to get a string form of
- * @return char* string of the TakeState_s
- */
-char*
-toString(TakeState_s* state);
-
 #endif

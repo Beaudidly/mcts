@@ -13,7 +13,7 @@ constructSetup(const MunitParameter params[], void* data) {
     return constructQueue();
 }
 
-void
+static void
 constructTearDown(void* fixture) {
     free(fixture);
 }

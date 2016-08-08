@@ -1,4 +1,5 @@
-#include "takeaway.h"
+#include "takeaway_state.h"
+#include <stdio.h>
 
 TakeState_s*
 createTakeState(uint8_t numPennies, uint8_t firstPlayer) {
@@ -24,12 +25,14 @@ deepCopy(TakeState_s* target) {
     
     // deep copy isn't really complicated as there are no pointers
     copy->pennies = target->pennies;
-    copy->lplayer = target->lplauyer;
+    copy->lplayer = target->lplayer;
+
+     return copy;
 }
 
 void
 performMove(TakeState_s* state, uint8_t* move) {
-    state->pennies -= move;
+    state->pennies -= *move;
 
     // simple player toggle
     state->lplayer = 3 - state->lplayer;
@@ -41,13 +44,15 @@ getMovesList(TakeState_s* state) {
 
     NodeQueue_s* movesList = constructQueue();
 
-    for(uint8_t i = 0; i < ceiling; i++) {
+    for(uint8_t i = 1; i <= ceiling; i++) {
         // The move has to be dynamically allocated
         uint8_t* tmpMove = (uint8_t*) malloc(sizeof(uint8_t));
         *tmpMove = i;
 
         enqueue(movesList, (void*) tmpMove);
     }
+
+    return movesList;
 }
 
 int8_t
@@ -61,5 +66,6 @@ gameResult(TakeState_s* state, uint8_t player) {
     } else {
         fprintf(stderr, "Logic error, gameResult called when game isn't \
                 finished\n");
+        return NULL;
     }
 }

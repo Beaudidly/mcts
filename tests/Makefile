@@ -11,9 +11,13 @@ queue_test: queue_test.o munit.o node_queue.o
 mctsNodeTest: mctsNodeTest.o munit.o node_queue.o mcts_node.o
 	$(CC) $(CFLAGS) -o $@ $^
 
+takeawayTest: takeawayTest.o munit.o node_queue.o takeaway_state.o
+	$(CC) $(CFLAGS) -o $@ $^
+
 tests:
 	./queue_test
 	./mctsNodeTest
+	./takeawayTest
 
 
 .PHONY: clean
@@ -24,4 +28,5 @@ clean:
 
 check:
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
-		--track-origins=yes ./queue_test 
+		--track-origins=yes ./takeawayTest
+
