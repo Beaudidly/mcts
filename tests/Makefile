@@ -1,7 +1,7 @@
 CC= gcc
 VPATH= src:../src ../tests
 CFLAGS= -std=c11 -g -Werror -Wall -pedantic
-TARGETS= mctsNodeTest queue_test
+TARGETS= mctsNodeTest queue_test takeawayTest
 
 all: $(TARGETS)
 

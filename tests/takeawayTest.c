@@ -152,6 +152,27 @@ listTest(const MunitParameter params[], void* data) {
     return MUNIT_OK;
 }
 
+// GAME RESULT
+static MunitResult
+resultTest(const MunitParameter params[], void* data) {
+    // Create the test states
+
+    // 2 is the one to have gone last
+    TakeState_s* s1 = createTakeState(0, 1);
+    // 1 is the one to have gone last
+    TakeState_s* s2 = createTakeState(0, 2);
+
+
+    // Gameresult(state, x) "Did player x not go last?"
+    munit_assert_int8(gameResult(s1, 1), ==, 1);
+    munit_assert_int8(gameResult(s1, 2), ==, 0);
+
+    munit_assert_int8(gameResult(s2, 1), ==, 0);
+    munit_assert_int8(gameResult(s2, 2), ==, 1);
+
+    return MUNIT_OK;
+}
+
 // TEST SUITE
 static MunitTest test_suite_tests[] = {
     { (char*) "/takeaway/create/", createTest, createSetup,
@@ -160,8 +181,10 @@ static MunitTest test_suite_tests[] = {
     { (char*) "/takeaway/perform/", performTest, performSetup,
         performTearDown, 0, NULL },
     { (char*) "/takeaway/list/", listTest, NULL, NULL, 0, NULL },
+    { (char*) "/takeaway/result/", resultTest, NULL, NULL, 0, NULL },
     { NULL, NULL, NULL, NULL, 0, NULL }
 };
+
 
 static const MunitSuite test_suite = {
     (char*) "takeawaysuite",

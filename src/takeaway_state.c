@@ -64,8 +64,9 @@ gameResult(TakeState_s* state, uint8_t player) {
             return 1;
         }
     } else {
+        // Only for debugging purposes
         fprintf(stderr, "Logic error, gameResult called when game isn't \
                 finished\n");
-        return NULL;
+        exit(EXIT_FAILURE);
     }
 }
