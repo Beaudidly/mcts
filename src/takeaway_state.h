@@ -2,6 +2,7 @@
 #define __TAKEAWAY_STATE_H__
 
 #include <stdint.h>
+#include "mcts_state.h"
 #include <stdlib.h>
 #include "node_queue.h"
 
@@ -13,11 +14,6 @@
  * if it is their turn.
  */
 
-typedef struct TakeState_s {
-    uint8_t pennies;     // number of pennies in the pile
-    uint8_t lplayer;     // last player to have played
-} TakeState_s;
-
 /**
  * dynamically allocate a TakeState_s struct 
  *
@@ -25,7 +21,7 @@ typedef struct TakeState_s {
  * @param firstPlayer the player desired to go first
  * @return dynamically allocated TakeState_s
  */
-TakeState_s*
+State_s*
 createTakeState(uint8_t numPennies, uint8_t firstPlayer);
 
 /**
@@ -34,7 +30,7 @@ createTakeState(uint8_t numPennies, uint8_t firstPlayer);
  * @param target pointer to the TakeState_s to free up
  */
 void
-destructTakeState(TakeState_s* target);
+destructTakeState(State_s* target);
 
 /**
  * Create a deep copy of the TakeState_s
@@ -42,8 +38,8 @@ destructTakeState(TakeState_s* target);
  * @param state the state to create a copy of
  * @return a new dynamically allocated deep copy of state
  */
-TakeState_s*
-deepCopy(TakeState_s* state);
+State_s*
+deepCopy(State_s* state);
 
 /**
  * Perform the given move on the given state
@@ -53,7 +49,7 @@ deepCopy(TakeState_s* state);
  * @pre the move is legal and follows the rules of the game
  */
 void
-performMove(TakeState_s* state, uint8_t* move);
+performMove(State_s* state, void* move);
 
 /**
  * Generate a list of moves possible to perform from the given state.
@@ -63,7 +59,7 @@ performMove(TakeState_s* state, uint8_t* move);
  * @return the NodeQueue_s of the states moves remaining to perform
  */
 NodeQueue_s*
-getMovesList(TakeState_s* state);
+getMovesList(State_s* state);
 
 /**
  * Provides the score/outcome of the game based on the state and
@@ -74,5 +70,13 @@ getMovesList(TakeState_s* state);
  * @return int8_t score based on the outcome relative to player
  */
 int8_t
-gameResult(TakeState_s* state, uint8_t player);
+gameResult(State_s* state, uint8_t player);
+
+/** Return  the current position of the game
+ *
+ * @param state the gamestate to retrieve the position from
+ * @return uin8_t quantity of the number of pennies left
+ */
+uint8_t
+currentPos(State_s* state);
 #endif

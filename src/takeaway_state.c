@@ -1,46 +1,66 @@
 #include "takeaway_state.h"
+#include "mcts_state.h"
 #include <stdio.h>
 
-TakeState_s*
+State_s*
 createTakeState(uint8_t numPennies, uint8_t firstPlayer) {
-    TakeState_s* state = (TakeState_s*) malloc(sizeof(TakeState_s));
-    state->pennies = numPennies;
+    State_s* state = (State_s*) malloc(sizeof(State_s));
+    state->position= malloc(sizeof(uint8_t));
+
+    *((uint8_t*)state->position) = numPennies;
 
     // as first player is 1 or 2, this flips it
     state->lplayer = 3 - firstPlayer;
+
+    // Add callback functions to the struct
+    
+    state->getMoves = getMovesList;
+    state->doMove = performMove;
+    state->gameResult = gameResult;
+    state->getDeepCopy = deepCopy;
 
     return state;
 }
 
 void
-destructTakeState(TakeState_s* target) {
+destructTakeState(State_s* target) {
     if(target != NULL) {
+        if(target->position != NULL) {
+            free(target->position);
+        }
         free(target);
     }
 }
 
-TakeState_s*
-deepCopy(TakeState_s* target) {
-    TakeState_s* copy = (TakeState_s*) malloc(sizeof(TakeState_s));
-    
-    // deep copy isn't really complicated as there are no pointers
-    copy->pennies = target->pennies;
+State_s*
+deepCopy(State_s* target) {
+    State_s* copy = (State_s*) malloc(sizeof(State_s));
+    copy->position = malloc(sizeof(uint8_t)); 
+
+    // need to derefernce the pointer to set and get the values
+    *((uint8_t*)copy->position) = *((uint8_t*)target->position);
     copy->lplayer = target->lplayer;
 
      return copy;
 }
 
+uint8_t
+currentPos(State_s* state) {
+    return *((uint8_t*) state->position);
+}
+
 void
-performMove(TakeState_s* state, uint8_t* move) {
-    state->pennies -= *move;
+performMove(State_s* state, void* move) {
+    *((uint8_t*)state->position) -= *((uint8_t*)move);
 
     // simple player toggle
     state->lplayer = 3 - state->lplayer;
 }
 
 NodeQueue_s*
-getMovesList(TakeState_s* state) {
-    uint8_t ceiling = (state->pennies < 3) ? state->pennies : 3;
+getMovesList(State_s* state) {
+    uint8_t pennies = *((uint8_t*)state->position);
+    uint8_t ceiling = (pennies < 3) ? pennies : 3;
 
     NodeQueue_s* movesList = constructQueue();
 
@@ -56,8 +76,10 @@ getMovesList(TakeState_s* state) {
 }
 
 int8_t
-gameResult(TakeState_s* state, uint8_t player) {
-    if(state->pennies == 0) {
+gameResult(State_s* state, uint8_t player) {
+    uint8_t pennies = *((uint8_t*)state->position);
+
+    if(pennies == 0) {
         if(state->lplayer == player) {
             return 0;
         } else {

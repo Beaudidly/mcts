@@ -1,5 +1,6 @@
 #include "munit.h"
 #include "../src/takeaway_state.h"
+#include "../src/mcts_state.h"
 #include <stdio.h>
 
 /*
@@ -9,6 +10,22 @@
 
 // TESTS
 
+// POSITION
+static MunitResult
+positionTest(const MunitParameter params[], void* data) {
+    State_s* state = createTakeState(20, 2);
+
+    uint8_t a = *((uint8_t*)state->position);
+    uint8_t b = currentPos(state);
+
+    munit_assert_uint8(a, ==, b);
+    munit_assert_uint8(b, ==, 20);
+    munit_assert_uint8(a, ==, 20);
+
+    destructTakeState(state);
+
+    return MUNIT_OK;
+}
 // CREATE AND DESTRUCT
 static void*
 createSetup(const MunitParameter params[], void* data) {
@@ -19,14 +36,14 @@ createSetup(const MunitParameter params[], void* data) {
 static void
 createTearDown(void* fixture) {
     // use `make check` to ensure this properly frees
-    destructTakeState((TakeState_s*) fixture);
+    destructTakeState((State_s*) fixture);
 }
 
 static MunitResult
 createTest(const MunitParameter params[], void* fixture) {
-    TakeState_s* state = (TakeState_s*) fixture;
+    State_s* state = (State_s*) fixture;
 
-    munit_assert_uint8(state->pennies, ==, 20);
+    munit_assert_uint8( currentPos(state), ==, 20);
 
     // Should be flipped from the input (firstplayer)
     munit_assert_uint8(state->lplayer, ==, 2);
@@ -37,20 +54,19 @@ createTest(const MunitParameter params[], void* fixture) {
 // DEEP COPY
 static MunitResult
 deepTest(const MunitParameter params[], void* data) {
-    // Create the initial TakeState_s
-    TakeState_s* init = createTakeState(20, 1);
+    // Create the initial State_s
+    State_s* init = createTakeState(20, 1);
 
     // Create the copy
-    TakeState_s* copy = deepCopy(init);
+    State_s* copy = deepCopy(init);
 
     // Check to make sure the values are consistent
-    munit_assert_uint8(init->pennies, ==, copy->pennies);
+    munit_assert_uint8(currentPos(init), ==, currentPos(copy));
     munit_assert_uint8(init->lplayer, ==, copy->lplayer);
 
     // Ensure addresses are all different
     munit_assert_ptr(init, !=, copy);
-    munit_assert_ptr(&(init->pennies), !=, &(copy->pennies));
-    munit_assert_ptr(&(init->pennies), !=, &(copy->pennies));
+    munit_assert_ptr(init->position, !=, copy->position);
 
     destructTakeState(init);
     destructTakeState(copy);
@@ -66,12 +82,12 @@ performSetup(const MunitParameter params[], void* data) {
 
 static void 
 performTearDown(void* fixture) {
-    free((TakeState_s*) fixture);
+    destructTakeState((State_s*) fixture);
 }
 
 static MunitResult
 performTest(const MunitParameter params[], void* fixture) {
-    TakeState_s* state = (TakeState_s*) fixture;
+    State_s* state = (State_s*) fixture;
 
     // allocate and assign moves
     uint8_t* m1 = (uint8_t*) malloc(sizeof(uint8_t));
@@ -83,15 +99,15 @@ performTest(const MunitParameter params[], void* fixture) {
 
     // Check performMove is functioning properly
     performMove(state, m1);
-    munit_assert_uint8(state->pennies, ==, 19);
+    munit_assert_uint8(currentPos(state), ==, 19);
     munit_assert_uint8(state->lplayer, ==, 2);
 
     performMove(state, m2);
-    munit_assert_uint8(state->pennies, ==, 17);
+    munit_assert_uint8(currentPos(state), ==, 17);
     munit_assert_uint8(state->lplayer, ==, 1);
 
     performMove(state, m3);
-    munit_assert_uint8(state->pennies, ==, 14);
+    munit_assert_uint8(currentPos(state), ==, 14);
     munit_assert_uint8(state->lplayer, ==, 2);
 
     free(m1);
@@ -104,10 +120,10 @@ performTest(const MunitParameter params[], void* fixture) {
 // GET MOVES LIST
 static MunitResult
 listTest(const MunitParameter params[], void* data) {
-    TakeState_s* s1 = createTakeState(20, 1);
-    TakeState_s* s2 = createTakeState(3, 2);
-    TakeState_s* s3 = createTakeState(2, 1);
-    TakeState_s* s4 = createTakeState(1, 2);
+    State_s* s1 = createTakeState(20, 1);
+    State_s* s2 = createTakeState(3, 2);
+    State_s* s3 = createTakeState(2, 1);
+    State_s* s4 = createTakeState(1, 2);
 
     // S1 testing with 20 pennies
     NodeQueue_s* q1 = getMovesList(s1);
@@ -158,9 +174,9 @@ resultTest(const MunitParameter params[], void* data) {
     // Create the test states
 
     // 2 is the one to have gone last
-    TakeState_s* s1 = createTakeState(0, 1);
+    State_s* s1 = createTakeState(0, 1);
     // 1 is the one to have gone last
-    TakeState_s* s2 = createTakeState(0, 2);
+    State_s* s2 = createTakeState(0, 2);
 
 
     // Gameresult(state, x) "Did player x not go last?"
@@ -175,6 +191,7 @@ resultTest(const MunitParameter params[], void* data) {
 
 // TEST SUITE
 static MunitTest test_suite_tests[] = {
+    { (char*) "/takeaway/position/", positionTest, NULL, NULL, 0, NULL },
     { (char*) "/takeaway/create/", createTest, createSetup,
         createTearDown, 0, NULL },
     { (char*) "/takeaway/deep/", deepTest, NULL, NULL, 0, NULL },
