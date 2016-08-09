@@ -1,7 +1,6 @@
 #include "munit.h"
 #include "../src/takeaway_state.h"
 #include "../src/mcts_state.h"
-#include <stdio.h>
 
 /*
  * Collection of unit tests for takeaway_state.c
