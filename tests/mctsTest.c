@@ -1,7 +1,9 @@
 #include "../src/mcts.h"
+#include "../src/takeaway_state.h"
 #include <stdio.h>
 #include <stdint.h>
 
 int main() {
-    printf("heyo");
+    State_s* state = createTakeState(20, 1); 
+    bestMove(state, 10000, 2);
 }

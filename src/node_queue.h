@@ -1,6 +1,8 @@
 #ifndef __NODE_QUEUE_H__
 #define __NODE_QUEUE_H__
 
+#include <stdint.h>
+
 typedef struct Node_s {
    void* data;
    struct Node_s* next;
