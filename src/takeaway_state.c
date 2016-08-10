@@ -1,5 +1,6 @@
 #include "takeaway_state.h"
 #include "mcts_state.h"
+#include <stdint.h>
 #include <stdio.h>
 
 State_s*

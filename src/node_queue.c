@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include "node_queue.h"
 #include <time.h>
 
@@ -33,7 +34,9 @@ freeQueueData(NodeQueue_s* queue) {
     Node_s* cursor = queue->head;
 
     while(cursor != NULL) {
-        free(cursor->data);
+        if(cursor->data != NULL) {
+            free(cursor->data);
+        }
         cursor = cursor->next;
     }
 }

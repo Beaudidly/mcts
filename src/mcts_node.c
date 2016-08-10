@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdint.h>
 #include "node_queue.h"
 #include "mcts_node.h"
@@ -30,7 +31,8 @@ createMctsNode(uint8_t newLplayer, NodeQueue_s* movesList,
 }
 
 MctsNode_s*
-addChild(MctsNode_s* parent, childMovesGen_f func) {
+addChild(MctsNode_s* parent, State_s* state,
+        childMovesGen_f genFunc, doMove moveFunc) {
     // Toggles the last player to the opposite of what 
     // the parent had
     uint8_t newLplayer = 3 - parent->lplayer;
@@ -39,9 +41,13 @@ addChild(MctsNode_s* parent, childMovesGen_f func) {
     // remaining move list
     void* childMove = randRemove(parent->rmoves);
 
+    // Perform the chosen move, this updates the position value
+    // of state
+    moveFunc(state, childMove);
+
     // Using the callback move list generator create a moves
     // remaining list for the new child
-    NodeQueue_s* rChildMoves = func(childMove);
+    NodeQueue_s* rChildMoves = genFunc(state);
 
     // Create the node to be returned
     MctsNode_s* child = createMctsNode(newLplayer,

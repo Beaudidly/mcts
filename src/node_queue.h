@@ -1,11 +1,6 @@
 #ifndef __NODE_QUEUE_H__
 #define __NODE_QUEUE_H__
 
-#include "mcts_node.h"
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-
 typedef struct Node_s {
    void* data;
    struct Node_s* next;

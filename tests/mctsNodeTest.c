@@ -1,5 +1,7 @@
 #include "munit.h"
 #include "../src/mcts_node.h"
+#include "../src/mcts_state.h"
+#include "../src/node_queue.h"
 #include <stdint.h>
 
 /*
@@ -32,14 +34,33 @@
 // satifies childMovesGen_f in that it creates a move list
 // off of a given state 
 static NodeQueue_s*
-genMoves(void* genstate) {
-   int* state = (int*) genstate;
-   int seed = *state;
+genMoves(State_s* state) {
+    uint8_t value = *((uint8_t*)state->position); 
 
-   NodeQueue_s* movesList;
-   CREATEMOVES(movesList, seed + 1, seed + 2, seed + 3);
+    // Generate a list for the generated moves
+    NodeQueue_s* list = constructQueue();
 
-   return movesList;
+    // allocate moves
+    uint8_t* a = malloc(sizeof(uint8_t));
+    uint8_t* b = malloc(sizeof(uint8_t));
+    uint8_t* c = malloc(sizeof(uint8_t));
+    *a = value + 1;
+    *b = value + 2;
+    *c = value + 3;
+
+    enqueue(list, (void*) a);
+    enqueue(list, (void*) b);
+    enqueue(list, (void*) c);
+
+    return list;
+}
+
+// hack of a function that satifies doMove for callback
+static void
+tmpDoMove(State_s* state, void* move) {
+    uint8_t* nMove = (uint8_t*) move;
+
+    *((uint8_t*)state->position) -= *(nMove);
 }
 
 /* FUNCTION UNIT TESTS */
@@ -69,7 +90,6 @@ createNodeTest(const MunitParameter params[], void* data) {
     munit_assert_not_null(root->children);
     munit_assert_null(root->children->head);
     
-    //TODO finish writing assertions
 
     return MUNIT_OK;
 }
@@ -149,35 +169,38 @@ childTearDown(void* fixture) {
 static MunitResult
 childTest(const MunitParameter params[], void* fixture) {
     MctsNode_s* parent = (MctsNode_s*) fixture;
+    
+    // hack together a state manually
+    State_s* state = (State_s*) malloc(sizeof(State_s));
+    state->position = malloc(sizeof(uint8_t));
+    *((uint8_t*)state->position) = 20;
 
-    // Manually create moves list for child and populate
-    NodeQueue_s* movesList;
-    CREATEMOVES(movesList, 1, 2, 3);
+    
+    MctsNode_s* child = addChild(parent, state,
+        genMoves, tmpDoMove);
 
-    MctsNode_s* child = addChild(parent, genMoves);
-
+    // Ensure chain is proper
+    munit_assert_not_null(child);
+    MctsNode_s* childCheck = (MctsNode_s*) peek(parent->children);
+    munit_assert_ptr(parent->children->head->data, ==, childCheck);
     munit_assert_ptr(parent, ==, child->parent);
 
-    // Check if lplayer properly toggles
-    munit_assert_uint8(1, ==, child->lplayer);
+    // Check that the state is correct
+    uint8_t childMove = *((uint8_t*)child->move);
+    uint8_t currPos = *((uint8_t*)state->position);
+    uint8_t change = ((uint8_t) 20) - currPos;
+    munit_assert_uint8(childMove, ==, change);
 
-    // Parent's children queue has been updated
-    MctsNode_s* cListCheck = peek(parent->children);
-    munit_assert_ptr(child, ==, cListCheck);
-    
-    // The child's move should be 1, 2, or 3
-    int childMove = *((int*)child->move);
-    if (childMove != 1 && childMove != 2 && childMove != 3) {
+    // Check moves are correct
+    uint8_t* a = (uint8_t*) dequeue(child->rmoves);
+
+    // Since its random, one must be right
+    if( *a != 18 && *a != 19 && *a != 20 ) {
         return MUNIT_FAIL;
     }
 
-    // Check to make sure the children's move list was generated correctly
-    int a = *((int*) dequeue(child->rmoves));
-    int b = *((int*) dequeue(child->rmoves));
-    int c = *((int*) dequeue(child->rmoves));
-    munit_assert_int(childMove + 1, ==, a);
-    munit_assert_int(childMove + 2, ==, b);
-    munit_assert_int(childMove + 3, ==, c);
+    // manually destruct stuff
+    free(a);
 
     return MUNIT_OK;
 }

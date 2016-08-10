@@ -1,8 +1,8 @@
 #ifndef __MCTS_STATE_H__
 #define __MCTS_STATE_H__
 
-#include <stdint.h>
 #include "node_queue.h"
+#include <stdint.h>
 
 typedef struct State_s {
     uint8_t lplayer;    // Last player to have logically moved

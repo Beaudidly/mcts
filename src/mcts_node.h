@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 #include "node_queue.h"
+#include "mcts_state.h"
 
 typedef struct NodeQueue_s NodeQueue_s;
-typedef NodeQueue_s* (*childMovesGen_f)(void*);
+typedef NodeQueue_s* (*childMovesGen_f)(State_s*);
+typedef void (*doMove)(State_s* state, void* move);
 typedef void (*destructMove_f)(void*);
 
 typedef struct MctsNode_s {
@@ -51,13 +53,17 @@ createMctsNode(uint8_t newLplayer, NodeQueue_s* movesList,
  * Creates a new MCTS node from a remaining move and adds it to the parent.
  *
  * @param parent the parent node in which to add a new child
+ * @param state used to perform the move on, and generate a new
+ *        moves list from
  * @param childMovesGen a callback function pointer to generate and populate
  *        the moves list for the child.  
+ * @param doMove the function that applies the given move to the given state
  * @return the child that was created and added to the parent's child list
  * @pre there are remaining moves in the parent node
  */
 MctsNode_s*
-addChild(MctsNode_s* parent, childMovesGen_f func);
+addChild(MctsNode_s* parent, State_s* state,
+        childMovesGen_f func, doMove moveFunc);
 
 /**
  * Recursively destruct the mcts nodes from the root node
