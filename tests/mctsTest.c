@@ -5,5 +5,5 @@
 
 int main() {
     State_s* state = createTakeState(20, 1); 
-    bestMove(state, 10000, 2);
+    bestMove(state, 5000, 2);
 }
