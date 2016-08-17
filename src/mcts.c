@@ -7,6 +7,11 @@
 #include <math.h>
 #include <sys/timeb.h>   // Posix solution, windows will have issues
 
+static MctsNode_s*
+select(const MctsNode_s* const root, const double c);
+
+static double
+UCT(const MctsNode_s* const node, const uint64_t rootPlays, const double c);
 // TODO use timer_create and signal evenets to improve performance
 
 // Need to play with inline functions to lower stack overhead
@@ -44,10 +49,8 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
 
         // EXPANSION
         if(isempty(currNode->rmoves)) {
-            // Take a random move from the remaining moves of the current node
-            void* move = randRemove(currNode->rmoves);
-
             // Create and add a new child node to the current node
+            // Pick a random move from the remaining moves
             // Perform the move on the current state
             // Update currNode to point to the new Child node
             currNode = addChild(currNode,
@@ -59,7 +62,7 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
 
         // SIMULATION
         // Play out a random game from the new expanded node
-        while(!isempty(currState->rmoves)) {
+        while(!isempty(currState->getMoves(currState))) {
             void* tmpMove = randRemove(currState->getMoves(currState));
 
             // Perform the random move on the current state
@@ -90,7 +93,7 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
             max = cursor;
         }
 
-        cursor = cursor->next;
+        cursor = dequeue(root->children);
     } 
 
     printf("\nTime Elapsed: %ld\n", elapsed);
@@ -111,18 +114,17 @@ select(const MctsNode_s* const root, const double c) {
 
     // Consider using absolute root's play count
     uint32_t t = root->plays;
-    NodeQueue_s* cursorList = root->children;
 
     // favored will point to the child to be explored next
-    Node_s* cursor = cursorList->head;
+    Node_s* cursor = root->children->head;
 
     MctsNode_s* favored = cursor->data;
-    double favWeight = UCT(favored, root->plays, c);
+    double favWeight = UCT(favored, t, c);
 
     // iterate over remaining children to check if they have higher weights than the first
-    cursor = cursorList->next;
+    cursor = cursor->next;
     while(cursor != NULL) {
-        double weight = UCT(cursor->data, root->plays, c);
+        double weight = UCT(cursor->data, t, c);
         if(weight > favWeight) {
             favored = cursor->data;
             favWeight = weight;
@@ -149,7 +151,7 @@ UCT(const MctsNode_s* const node, const uint64_t rootPlays, const double c) {
     double left = (node->wins / (double) node->plays);
 
     // optimize through gcc exponentials
-    double right = c * pow(log((double) rootPlays) / (double) node->plays);
+    double right = c * pow(log((double) rootPlays) / (double) node->plays, 0.5);
 
     return left + right;
 }

@@ -15,7 +15,7 @@ takeawayTest: takeawayTest.o munit.o node_queue.o takeaway_state.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 mctsTest: takeaway_state.o  mcts.o mctsTest.o mcts_node.o node_queue.o
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 stateTest: takeaway_state.o munit.o stateTest.o node_queue.o 
 	$(CC) $(CFLAGS) -o $@ $^

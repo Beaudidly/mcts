@@ -69,7 +69,7 @@ getMovesList(State_s* state);
  * @param player determines if the ending is a win or loss for them
  * @return int8_t score based on the outcome relative to player
  */
-int8_t
+int32_t
 gameResult(State_s* state, uint8_t player);
 
 /** Return  the current position of the game
