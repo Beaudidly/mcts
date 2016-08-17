@@ -57,13 +57,11 @@ createMctsNode(uint8_t newLplayer, NodeQueue_s* movesList,
  *        moves list from
  * @param childMovesGen a callback function pointer to generate and populate
  *        the moves list for the child.  
- * @param doMove the function that applies the given move to the given state
  * @return the child that was created and added to the parent's child list
  * @pre there are remaining moves in the parent node
  */
 MctsNode_s*
-addChild(MctsNode_s* parent, State_s* state,
-        childMovesGen_f func, doMove moveFunc);
+addChild(MctsNode_s* parent, State_s* state);
 
 /**
  * Recursively destruct the mcts nodes from the root node

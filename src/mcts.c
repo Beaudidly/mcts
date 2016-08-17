@@ -44,20 +44,14 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
             currState->doMove(currState, currNode->move);
         }
 
-        // DEBUG
-        if(!isempty(currNode->rmoves)) printf("HIT\n");
-
         // EXPANSION
-        if(isempty(currNode->rmoves)) {
+        if(!isempty(currNode->rmoves)) {
             // Create and add a new child node to the current node
             // Pick a random move from the remaining moves
             // Perform the move on the current state
             // Update currNode to point to the new Child node
-            currNode = addChild(currNode,
-                                currState,
-                                currState->getMoves,
-                                currState->doMove);
 
+            currNode = addChild(currNode, currState);
         }
 
         // SIMULATION
@@ -96,7 +90,9 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
         cursor = dequeue(root->children);
     } 
 
+    // DEBUG
     printf("\nTime Elapsed: %ld\n", elapsed);
+    printf("Plays: %u\n", root->plays);
 
     // Return the move of the child node with the most plays as the best move
     return max->move;

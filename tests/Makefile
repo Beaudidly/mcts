@@ -20,6 +20,9 @@ mctsTest: takeaway_state.o  mcts.o mctsTest.o mcts_node.o node_queue.o
 stateTest: takeaway_state.o munit.o stateTest.o node_queue.o 
 	$(CC) $(CFLAGS) -o $@ $^
 
+tmpTest: takeaway_state.o tmpTest.o node_queue.o mcts_node.o mcts.o
+	$(CC) $(CFLAGS) -o $@ $^ -lm
+
 tests:
 	./queue_test
 	./mctsNodeTest

@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include "node_queue.h"
 #include "mcts_node.h"
+#include "mcts_state.h"
+#include <stdio.h>
 
 // TODO convert to camelCase
 
@@ -31,8 +33,13 @@ createMctsNode(uint8_t newLplayer, NodeQueue_s* movesList,
 }
 
 MctsNode_s*
-addChild(MctsNode_s* parent, State_s* state,
-        childMovesGen_f genFunc, doMove moveFunc) {
+addChild(MctsNode_s* parent, State_s* state) {
+    // DEBUG
+    if(state->getMoves == NULL && state->doMove == NULL) {
+        fprintf(stderr, "Callback functions are NULL\n");
+        printf("%u\n", *((uint8_t*)state->position));
+        exit(EXIT_FAILURE);
+    }
     // Toggles the last player to the opposite of what 
     // the parent had
     uint8_t newLplayer = 3 - parent->lplayer;
@@ -43,11 +50,11 @@ addChild(MctsNode_s* parent, State_s* state,
 
     // Perform the chosen move, this updates the position value
     // of state
-    moveFunc(state, childMove);
+    state->doMove(state, childMove);
 
     // Using the callback move list generator create a moves
     // remaining list for the new child
-    NodeQueue_s* rChildMoves = genFunc(state);
+    NodeQueue_s* rChildMoves = state->getMoves(state);
 
     // Create the node to be returned
     MctsNode_s* child = createMctsNode(newLplayer,

@@ -35,14 +35,14 @@ destructTakeState(State_s* target) {
 
 State_s*
 deepCopy(State_s* target) {
-    State_s* copy = (State_s*) malloc(sizeof(State_s));
-    copy->position = malloc(sizeof(uint8_t)); 
+    uint8_t numPennies = *((uint8_t*)target->position);
+    uint8_t firstPlayer = 3 - target->lplayer;
 
-    // need to derefernce the pointer to set and get the values
-    *((uint8_t*)copy->position) = *((uint8_t*)target->position);
-    copy->lplayer = target->lplayer;
+    // Using pass by value to ensure references aren't the same
+    // Optimize to prevent function calling overhead
+    State_s* copy = createTakeState(numPennies, firstPlayer);
 
-     return copy;
+    return copy;
 }
 
 uint8_t
