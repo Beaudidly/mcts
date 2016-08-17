@@ -76,7 +76,7 @@ getMovesList(State_s* state) {
     return movesList;
 }
 
-int8_t
+int32_t
 gameResult(State_s* state, uint8_t player) {
     uint8_t pennies = *((uint8_t*)state->position);
 

@@ -12,7 +12,7 @@ typedef struct State_s {
     // function that alters the state based on the given move
     void (*doMove)(struct State_s* state, void* move);
     // function that returns the score of the game
-    int8_t (*gameResult)(struct State_s* state, uint8_t player);
+    int32_t (*gameResult)(struct State_s* state, uint8_t player);
     //function that provides a deep copy of the struct
     struct State_s* (*getDeepCopy)(struct State_s *state);
 } State_s;

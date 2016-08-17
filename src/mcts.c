@@ -22,18 +22,54 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
     struct timeb start, check;
     ftime(&start);
 
+    // Run while the elapsed time has not surpassed the specified duration of 
+    // milliseconds
     while( elapsed < duration ) {
         
         MctsNode_s* currNode = root;
         State_s* currState = state->getDeepCopy(state);
 
         // SELECTION
-        
         // Traverse Nodes that have all their children generated
         while(isempty(currNode->rmoves) && !isempty(currNode->children)) {
             // Call UCT formula to select best child
+            currNode = select(currNode, c);
+
+            // Perform the move on the currState
+            currState->doMove(currState, currNode->move);
+        }
+
+        // DEBUG
+        if(!isempty(currNode->rmoves)) printf("HIT\n");
+
+        // EXPANSION
+        if(isempty(currNode->rmoves)) {
+            // Take a random move from the remaining moves of the current node
+            void* move = randRemove(currNode->rmoves);
+
+            // Create and add a new child node to the current node
+            // Perform the move on the current state
+            // Update currNode to point to the new Child node
+            currNode = addChild(currNode,
+                                currState,
+                                currState->getMoves,
+                                currState->doMove);
 
         }
+
+        // SIMULATION
+        // Play out a random game from the new expanded node
+        while(!isempty(currState->rmoves)) {
+            void* tmpMove = randRemove(currState->getMoves(currState));
+
+            // Perform the random move on the current state
+            currState->doMove(currState, tmpMove);
+        }
+
+        // BACKPROPAGATION
+        int32_t score = currState->gameResult(currState, currNode->lplayer);
+        backpropagation(score, currNode);
+        
         
         // Update the elapsed time
         ftime(&check);
@@ -41,9 +77,26 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
                   (check.millitm - start.millitm);
     }
 
-    printf("\n%ld\n", elapsed);
-    (void) root;
-    return NULL;
+    // choose the best move out of the root's children
+    MctsNode_s* cursor = dequeue(root->children);
+    MctsNode_s* max = cursor;
+
+    cursor = dequeue(root->children);
+
+    // Iterate through the remaining children to find the child with the
+    // greatest number of plays (most exploited/explored from)
+    while(cursor != NULL) {
+        if(cursor->plays > max-> plays) {
+            max = cursor;
+        }
+
+        cursor = cursor->next;
+    } 
+
+    printf("\nTime Elapsed: %ld\n", elapsed);
+
+    // Return the move of the child node with the most plays as the best move
+    return max->move;
 }
 
 /**
