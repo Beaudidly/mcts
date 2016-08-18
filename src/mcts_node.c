@@ -34,12 +34,6 @@ createMctsNode(uint8_t newLplayer, NodeQueue_s* movesList,
 
 MctsNode_s*
 addChild(MctsNode_s* parent, State_s* state) {
-    // DEBUG
-    if(state->getMoves == NULL && state->doMove == NULL) {
-        fprintf(stderr, "Callback functions are NULL\n");
-        printf("%u\n", *((uint8_t*)state->position));
-        exit(EXIT_FAILURE);
-    }
     // Toggles the last player to the opposite of what 
     // the parent had
     uint8_t newLplayer = 3 - parent->lplayer;

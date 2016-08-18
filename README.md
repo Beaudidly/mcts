@@ -2,6 +2,16 @@
 
 This is a perfect information game solver. What this means is that it can make a decision on what it finds to be the best possible move from the given state. Such games that meet the criteria of 'perfect information' are tic-tac-toe, othello, checkers, chess, and Go.  
 
+### Usage
+As of now, there are only tests to ensure the project is working and functioning.
+
+`/mcts/tests/$ make` - build all the tests
+
+`/mcts/tests/$ make [test] ` - build a specific test
+
+Binaries for the tests will be found in the same directory, `/mcts/tests/`
+
+`/mcts/tests/$ make tests` - run all the generated tests
 ### How it works
 
 ##### Anatomy of a Monte Carlo tree

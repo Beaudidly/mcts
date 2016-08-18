@@ -1,8 +1,10 @@
 #include "munit.h"
+#include "../src/takeaway_state.h"
 #include "../src/mcts_node.h"
 #include "../src/mcts_state.h"
 #include "../src/node_queue.h"
 #include <stdint.h>
+#include <stdio.h>
 
 /*
  * Collection of unit tests for mcts_node.c
@@ -30,38 +32,6 @@
         ptr = (MctsNode_s*) malloc(sizeof(MctsNode_s));   \
         memset(ptr, 0, sizeof(MctsNode_s));                \
     } while (0)
-
-// satifies childMovesGen_f in that it creates a move list
-// off of a given state 
-static NodeQueue_s*
-genMoves(State_s* state) {
-    uint8_t value = *((uint8_t*)state->position); 
-
-    // Generate a list for the generated moves
-    NodeQueue_s* list = constructQueue();
-
-    // allocate moves
-    uint8_t* a = malloc(sizeof(uint8_t));
-    uint8_t* b = malloc(sizeof(uint8_t));
-    uint8_t* c = malloc(sizeof(uint8_t));
-    *a = value + 1;
-    *b = value + 2;
-    *c = value + 3;
-
-    enqueue(list, (void*) a);
-    enqueue(list, (void*) b);
-    enqueue(list, (void*) c);
-
-    return list;
-}
-
-// hack of a function that satifies doMove for callback
-static void
-tmpDoMove(State_s* state, void* move) {
-    uint8_t* nMove = (uint8_t*) move;
-
-    *((uint8_t*)state->position) -= *(nMove);
-}
 
 /* FUNCTION UNIT TESTS */
 
@@ -171,13 +141,10 @@ childTest(const MunitParameter params[], void* fixture) {
     MctsNode_s* parent = (MctsNode_s*) fixture;
     
     // hack together a state manually
-    State_s* state = (State_s*) malloc(sizeof(State_s));
-    state->position = malloc(sizeof(uint8_t));
-    *((uint8_t*)state->position) = 20;
+    State_s* state = createTakeState(20, 1);
 
     
-    MctsNode_s* child = addChild(parent, state,
-        genMoves, tmpDoMove);
+    MctsNode_s* child = addChild(parent, state);
 
     // Ensure chain is proper
     munit_assert_not_null(child);
@@ -193,14 +160,12 @@ childTest(const MunitParameter params[], void* fixture) {
 
     // Check moves are correct
     uint8_t* a = (uint8_t*) dequeue(child->rmoves);
+    uint8_t* b = (uint8_t*) dequeue(child->rmoves);
+    uint8_t* c = (uint8_t*) dequeue(child->rmoves);
 
-    // Since its random, one must be right
-    if( *a != 18 && *a != 19 && *a != 20 ) {
-        return MUNIT_FAIL;
-    }
-
-    // manually destruct stuff
-    free(a);
+    munit_assert_uint8(*a, ==, 1);
+    munit_assert_uint8(*b, ==, 2);
+    munit_assert_uint8(*c, ==, 3);
 
     return MUNIT_OK;
 }

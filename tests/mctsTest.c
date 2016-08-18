@@ -1,3 +1,4 @@
+#define TEST
 #include "../src/mcts.h"
 #include "../src/takeaway_state.h"
 #include <stdio.h>

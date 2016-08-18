@@ -93,3 +93,10 @@ gameResult(State_s* state, uint8_t player) {
         exit(EXIT_FAILURE);
     }
 }
+
+#ifndef _TEST_
+int
+main() {
+
+}
+#endif
