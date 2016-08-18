@@ -85,6 +85,6 @@ backpropagation(int32_t gameResult, MctsNode_s* node);
 /**
  * Prints a display of the tree
  */
-//void
-//printTree();
+void
+printTree(MctsNode_s* root);
 #endif

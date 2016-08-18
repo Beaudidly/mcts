@@ -97,3 +97,15 @@ backpropagation(int32_t game_result, MctsNode_s* node) {
         cursor = cursor->parent;
     }
 }
+
+void
+printTree(MctsNode_s* root) {
+    // Only prints root and children play counts for now
+    Node_s* headNode = root->children->head;
+    uint32_t rootPlays = root->plays;
+    uint32_t c1 = ((MctsNode_s*)headNode->data)->plays;
+    uint32_t c2 = ((MctsNode_s*)headNode->next->data)->plays;
+    uint32_t c3 = ((MctsNode_s*)headNode->next->next->data)->plays;
+
+    printf("R:%u 1:%u 2:%u 3:%u\n", rootPlays, c1, c2, c3);
+}

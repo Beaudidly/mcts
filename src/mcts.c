@@ -74,25 +74,43 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
                   (check.millitm - start.millitm);
     }
 
+    // TMP
+    MctsNode_s* c1 = (MctsNode_s*) root->children->head->data;
+    MctsNode_s* c2 = (MctsNode_s*) root->children->head->next->data;
+    MctsNode_s* c3 = (MctsNode_s*) root->children->head->next->next->data;
+    uint8_t m1 = *((uint8_t*)c1->move);
+    uint8_t m2 = *((uint8_t*)c2->move);
+    uint8_t m3 = *((uint8_t*)c3->move);
+    printf("\n\n|%u %u %u|\n\n", m1, m2, m3);
+
     // choose the best move out of the root's children
-    MctsNode_s* cursor = dequeue(root->children);
-    MctsNode_s* max = cursor;
+    NodeQueue_s* rootChildren = root->children;
+    Node_s* cursor = rootChildren->head;
+    
+    // Pointer to the node with the most plays
+    // Initialized to the first child in the list
+    MctsNode_s* max = (MctsNode_s*) cursor->data;
 
-    cursor = dequeue(root->children);
+    // Advance the cursor to the next possible child
+    cursor = cursor->next;
 
-    // Iterate through the remaining children to find the child with the
+    // Iterate through the remaining children to find the child with the 
     // greatest number of plays (most exploited/explored from)
     while(cursor != NULL) {
-        if(cursor->plays > max-> plays) {
-            max = cursor;
+        if(((MctsNode_s*) cursor->data)->plays > max->plays) {
+            // set max to the new greater play count child node
+            max = (MctsNode_s*) cursor->data;
         }
 
-        cursor = dequeue(root->children);
-    } 
+        // Advance the cursor
+        cursor = cursor->next;
+    }
 
-    // DEBUG
+    #ifdef _TEST_
+    printTree(root);
     printf("\nTime Elapsed: %ld\n", elapsed);
-    printf("Plays: %u\n", root->plays);
+    printf("ROOTPLAYS: %u\n", root->plays);
+    #endif 
 
     // Return the move of the child node with the most plays as the best move
     return max->move;

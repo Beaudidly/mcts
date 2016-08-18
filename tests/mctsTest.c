@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 int main() {
-    State_s* state = createTakeState(15, 1); 
+    State_s* state = createTakeState(6, 1); 
     NodeQueue_s* moves = state->getMoves(state);
 
     printf("isempty? %u\n", isempty(moves));
@@ -17,7 +17,7 @@ int main() {
     printf("%u\n", move);
     printf("isempty? %u\n", isempty(moves));
 
-    void* mover = bestMove(state, 500, 2);
+    void* mover = bestMove(state, 10000, 2);
 
     printf("BEST: %u\n", *((uint8_t*)mover));
 }
