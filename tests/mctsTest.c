@@ -17,7 +17,7 @@ int main() {
     printf("%u\n", move);
     printf("isempty? %u\n", isempty(moves));
 
-    void* mover = bestMove(state, 10000, 2);
+    void* mover = bestMove(state, 1000, 2);
 
     printf("BEST: %u\n", *((uint8_t*)mover));
 }
