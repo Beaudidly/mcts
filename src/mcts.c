@@ -112,6 +112,7 @@ bestMove(State_s* state, const uint64_t duration, const double c) {
     printf("ROOTPLAYS: %u\n", root->plays);
     #endif 
 
+    destructMctsTree(root);
     // Return the move of the child node with the most plays as the best move
     return max->move;
 }

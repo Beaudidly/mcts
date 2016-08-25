@@ -118,15 +118,12 @@ getInput(State_s* state) {
         char buffer[256];
         // 32 bytes to satisfy '%u' for sscanf.
         uint32_t move;
-            printf("%u %u UGH\n", min, max);
 
         // Read user input into buffer, ()
         if(fgets(buffer, sizeof(buffer), stdin) != NULL) {
             // validate that move is properly set
-            printf("%u %u UGH\n", min, max);
             if( 1 == sscanf(buffer, "%u", &move)) {
                 // validate that the move is in range
-                printf("%u %u UGH\n", min, max);
                 if((min <= move) && (move <= max)) {
                     return move;
                 } else {
@@ -146,5 +143,8 @@ getInput(State_s* state) {
 }
 int
 main() {
+    State_s* tmp = createTakeState(20, 2);
+    uint8_t a = getInput(tmp);
+    printf("%u", a);
 }
 #endif
