@@ -1,6 +1,6 @@
 #define TEST
-#include "../src/mcts.h"
-#include "../src/takeaway_state.h"
+#include "mcts.h"
+#include "takeaway_state.h"
 #include <stdio.h>
 #include <stdint.h>
 

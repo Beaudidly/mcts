@@ -1,8 +1,8 @@
 #include "munit.h"
-#include "../src/takeaway_state.h"
-#include "../src/mcts_node.h"
-#include "../src/mcts_state.h"
-#include "../src/node_queue.h"
+#include "takeaway_state.h"
+#include "mcts_node.h"
+#include "mcts_state.h"
+#include "node_queue.h"
 #include <stdint.h>
 #include <stdio.h>
 

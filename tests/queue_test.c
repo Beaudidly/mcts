@@ -1,5 +1,5 @@
 #include "munit.h"
-#include "../src/node_queue.h"
+#include "node_queue.h"
 #include <stdint.h>
 
 /*
